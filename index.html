@@ -1203,6 +1203,94 @@ function loadData() {
 // Close modal on overlay click
 document.getElementById('addModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAddModal(); });
 
+// ── PIPEDRIVE SYNC (Write Back) ────────────────────────────────────────────────
+async function pdRequest(path, method, body) {
+  const token = localStorage.getItem('pd_token');
+  if (!token) { toast('⚠️ Kein Pipedrive Token gespeichert!'); return null; }
+
+  try {
+    const options = {
+      method: 'POST', // Worker accepts POST, uses X-PD-Method for actual method
+      headers: {
+        'Content-Type': 'application/json',
+        'X-PD-Token': token,
+        'X-PD-Method': method,
+      },
+    };
+    if (body) options.body = JSON.stringify(body);
+
+    const res = await fetch(`${PROXY_URL}?path=${encodeURIComponent(path)}`, options);
+    return await res.json();
+  } catch(e) {
+    toast('❌ Pipedrive Fehler: ' + e.message);
+    return null;
+  }
+}
+
+async function addNoteToPipedrive(customerId, noteText) {
+  const c = customers.find(x => x.id === customerId);
+  if (!c || !c.pdId) { toast('⚠️ Kein Pipedrive Deal verknüpft!'); return; }
+  if (!noteText.trim()) { toast('⚠️ Bitte Notiz eingeben!'); return; }
+
+  toast('⏳ Notiz wird gespeichert...');
+  const result = await pdRequest('notes', 'POST', {
+    content: noteText,
+    deal_id: c.pdId,
+  });
+
+  if (result && result.success) {
+    toast(`✅ Notiz in Pipedrive gespeichert!`);
+    // Also save locally
+    c.notes = (c.notes ? c.notes + '\n' : '') + `[${new Date().toLocaleDateString('de')}] ${noteText}`;
+    saveData();
+    openPanel(customerId);
+  } else {
+    toast('❌ Fehler beim Speichern in Pipedrive');
+  }
+}
+
+async function updateDealInPipedrive(customerId) {
+  const c = customers.find(x => x.id === customerId);
+  if (!c || !c.pdId) { toast('⚠️ Kein Pipedrive Deal verknüpft!'); return; }
+
+  toast('⏳ Deal wird aktualisiert...');
+
+  // Map touchpoint step to Pipedrive stage
+  const stageMap = { 0:1, 1:2, 2:3, 3:3, 4:4, 5:4, 6:5, 7:5, 8:5, 9:6, 10:6 };
+
+  const result = await pdRequest(`deals/${c.pdId}`, 'PUT', {
+    stage_id: stageMap[c.step] || 1,
+    value: c.preis ? parseInt(c.preis) : undefined,
+    expected_close_date: c.offerdate || undefined,
+  });
+
+  if (result && result.success) {
+    toast(`✅ Deal in Pipedrive aktualisiert!`);
+  } else {
+    toast('❌ Fehler beim Aktualisieren');
+  }
+}
+
+async function addActivityToPipedrive(customerId, subject, dueDate) {
+  const c = customers.find(x => x.id === customerId);
+  if (!c || !c.pdId) { toast('⚠️ Kein Pipedrive Deal verknüpft!'); return; }
+
+  toast('⏳ Aktivität wird erstellt...');
+  const result = await pdRequest('activities', 'POST', {
+    subject: subject || `Touchpoint ${c.step + 1}: ${TOUCHPOINTS[c.step]?.label}`,
+    deal_id: c.pdId,
+    due_date: dueDate || new Date().toISOString().split('T')[0],
+    type: 'call',
+    done: 1,
+  });
+
+  if (result && result.success) {
+    toast(`✅ Aktivität in Pipedrive eingetragen!`);
+  } else {
+    toast('❌ Fehler beim Erstellen der Aktivität');
+  }
+}
+
 // ── PIPEDRIVE IMPORT ───────────────────────────────────────────────────────────
 let pdDeals = [];
 
