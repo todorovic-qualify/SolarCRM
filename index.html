@@ -5,226 +5,283 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SolarCRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f0f2f5;--white:#fff;--border:#e4e8ef;--text:#1a1f2e;--muted:#8892a4;--accent:#f59e0b;--blue:#3b82f6;--green:#10b981;--red:#ef4444;--orange:#f97316;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.04);--shadow-lg:0 8px 32px rgba(0,0,0,.12)}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
-.topnav{background:var(--text);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:54px;flex-shrink:0}
-.logo{font-size:18px;font-weight:800;color:#fff}.logo span{color:var(--accent)}
-.nav-stats{display:flex;gap:16px}
-.ns{font-size:12px;color:rgba(255,255,255,.6)}.ns strong{color:#fff}
-.nav-btns{display:flex;gap:8px}
-.btn{padding:7px 14px;border-radius:7px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
-.btn-primary{background:var(--accent);color:#000}.btn-primary:hover{opacity:.85}
-.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15)}.btn-ghost:hover{background:rgba(255,255,255,.15)}
-.btn-pd{background:rgba(255,140,50,.15);color:#ff8040;border:1px solid rgba(255,140,50,.3)}
-.btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}
-.btn-blue{background:var(--blue);color:#fff}.btn-green{background:var(--green);color:#fff}
-.btn-wa{background:#25d366;color:#fff}.btn-muted{background:rgba(100,116,139,.1);color:var(--text)}
-.btn-red{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
-.subbar{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:46px;flex-shrink:0}
-.sub-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-.search-wrap{position:relative}
-.search-wrap input{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:6px 10px 6px 30px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);width:200px;outline:none}
-.search-wrap input:focus{border-color:var(--accent)}
-.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
-.board{flex:1;overflow-x:auto;overflow-y:hidden;padding:16px 20px;display:flex;gap:10px;align-items:flex-start}
-.col{flex-shrink:0;width:210px;display:flex;flex-direction:column;gap:8px;max-height:100%}
-.col-hd{background:#fff;border:1px solid var(--border);border-radius:9px;padding:9px 11px;flex-shrink:0}
-.col-ti{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
-.col-cnt{background:var(--bg);border-radius:20px;padding:1px 6px;font-size:10px;color:var(--text);font-weight:600}
-.col-de{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3}
-.col-bd{overflow-y:auto;display:flex;flex-direction:column;gap:7px;flex:1;padding-bottom:8px}
-.col:nth-child(1) .col-hd{border-top:3px solid #64748b}
-.col:nth-child(2) .col-hd{border-top:3px solid var(--blue)}
-.col:nth-child(3) .col-hd{border-top:3px solid #8b5cf6}
-.col:nth-child(4) .col-hd{border-top:3px solid #06b6d4}
-.col:nth-child(5) .col-hd{border-top:3px solid var(--accent)}
-.col:nth-child(6) .col-hd{border-top:3px solid var(--orange)}
-.col:nth-child(7) .col-hd{border-top:3px solid #ec4899}
-.col:nth-child(8) .col-hd{border-top:3px solid #8b5cf6}
-.col:nth-child(9) .col-hd{border-top:3px solid var(--green)}
-.col:nth-child(10) .col-hd{border-top:3px solid var(--accent)}
-.col:nth-child(11) .col-hd{border-top:3px solid var(--green)}
-.card{background:#fff;border:1px solid var(--border);border-radius:9px;padding:11px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow)}
-.card:hover{border-color:var(--accent);box-shadow:var(--shadow-lg);transform:translateY(-1px)}
-.card-name{font-size:13px;font-weight:700;margin-bottom:3px}
-.card-meta{font-size:11px;color:var(--muted);margin-bottom:7px}
-.progress{display:flex;gap:2px;margin-bottom:7px}
-.dot{height:3px;flex:1;border-radius:2px;background:var(--border)}
-.dot.done{background:var(--green)}.dot.cur{background:var(--accent)}
-.tags{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:7px}
-.tag{font-size:10px;padding:2px 6px;border-radius:20px;font-weight:600}
-.tag-hot{background:rgba(239,68,68,.1);color:var(--red)}
-.tag-warm{background:rgba(245,158,11,.1);color:var(--accent)}
-.tag-cold{background:rgba(100,116,139,.1);color:var(--muted)}
-.tag-pd{background:rgba(255,140,50,.1);color:#ff8040}
-.card-warn{margin-top:6px;padding:4px 8px;background:rgba(239,68,68,.07);border-radius:5px;font-size:11px;color:var(--red)}
-.card-btns{display:flex;gap:4px;margin-top:8px}
-.overlay{position:fixed;inset:0;background:rgba(26,31,46,.4);z-index:200;display:none;backdrop-filter:blur(2px)}
-.overlay.open{display:block}
-.panel{position:fixed;top:0;right:0;width:460px;max-width:100vw;height:100vh;background:#fff;z-index:201;overflow-y:auto;box-shadow:-8px 0 32px rgba(0,0,0,.12);transform:translateX(100%);transition:transform .25s ease}
-.panel.open{transform:translateX(0)}
-.panel-hd{background:var(--text);padding:18px 20px;display:flex;align-items:flex-start;justify-content:space-between}
-.panel-ti{font-size:19px;font-weight:800;color:#fff}
-.panel-su{font-size:12px;color:rgba(255,255,255,.5);margin-top:3px}
-.xbtn{background:rgba(255,255,255,.1);border:none;border-radius:7px;width:30px;height:30px;color:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.xbtn:hover{background:rgba(255,255,255,.2)}
-.panel-body{padding:20px;display:flex;flex-direction:column;gap:18px}
-.sec-ti{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
-.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ii{background:var(--bg);border-radius:7px;padding:9px 11px}
-.ii label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:2px}
-.ii span{font-size:13px;font-weight:600}
-.ii.full{grid-column:1/-1}
-.egrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fg{display:flex;flex-direction:column;gap:4px}
-.fg.full{grid-column:1/-1}
-.fg label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.fg input,.fg select,.fg textarea{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);outline:none;width:100%}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);background:#fff}
-.fg textarea{resize:vertical;min-height:60px}
-.tplist{display:flex;flex-direction:column;gap:6px}
-.tpi{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:7px;border:1px solid var(--border);background:var(--bg)}
-.tpi.tp-done{background:rgba(16,185,129,.05);border-color:rgba(16,185,129,.2)}
-.tpi.tp-cur{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.3)}
-.tpck{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;cursor:pointer;transition:all .15s}
-.tpck.ck-done{background:var(--green);border-color:var(--green);color:#fff}
-.tpck.ck-cur{border-color:var(--accent);background:rgba(245,158,11,.15);color:var(--accent);font-weight:700}
-.pdb{background:var(--bg);border-radius:8px;padding:12px;margin-bottom:8px}
-.pdb-ti{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px}
-.pd-ta{width:100%;background:#fff;border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);resize:vertical;min-height:65px;outline:none;display:block;margin-bottom:8px}
-.pd-ta:focus{border-color:var(--accent)}
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
-.modal-ov.open{display:flex}
-.modal{background:#fff;border-radius:14px;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
-.modal-hd{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between}
-.modal-hd h2{font-size:18px;font-weight:800}
-.modal-body{padding:18px 20px 20px}
-.modal-act{display:flex;gap:8px;justify-content:flex-end;padding-top:14px;border-top:1px solid var(--border);margin-top:14px}
-.toasts{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
-.toast{background:var(--text);color:#fff;padding:10px 14px;border-radius:9px;font-size:13px;box-shadow:var(--shadow-lg);border-left:3px solid var(--accent);animation:tIn .3s ease}
-@keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+:root {
+  --bg: #f0f2f5; --white: #fff; --border: #e4e8ef;
+  --text: #1a1f2e; --muted: #8892a4;
+  --accent: #f59e0b; --blue: #3b82f6; --green: #10b981;
+  --red: #ef4444; --orange: #f97316; --purple: #8b5cf6;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08),0 4px 12px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+
+/* NAV */
+.topnav { background:var(–text); padding:0 20px; display:flex; align-items:center; justify-content:space-between; height:54px; flex-shrink:0; }
+.logo { font-size:18px; font-weight:800; color:#fff; }
+.logo span { color:var(–accent); }
+.nav-stats { display:flex; gap:16px; }
+.nav-stat { font-size:12px; color:rgba(255,255,255,0.6); }
+.nav-stat strong { color:#fff; }
+.nav-actions { display:flex; gap:8px; }
+
+/* BUTTONS */
+.btn { padding:7px 14px; border-radius:7px; font-family:‘Outfit’,sans-serif; font-size:13px; font-weight:500; cursor:pointer; border:none; transition:all 0.15s; display:inline-flex; align-items:center; gap:5px; }
+.btn-primary { background:var(–accent); color:#000; }
+.btn-primary:hover { opacity:0.85; }
+.btn-ghost { background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15); }
+.btn-ghost:hover { background:rgba(255,255,255,0.15); }
+.btn-pd { background:rgba(255,140,50,0.15); color:#ff8040; border:1px solid rgba(255,140,50,0.3); }
+.btn-sm { padding:5px 10px; font-size:12px; border-radius:6px; }
+.btn-blue { background:var(–blue); color:#fff; }
+.btn-green { background:var(–green); color:#fff; }
+.btn-wa { background:#25d366; color:#fff; }
+.btn-red { background:rgba(239,68,68,0.1); color:var(–red); border:1px solid rgba(239,68,68,0.2); }
+.btn-muted { background:rgba(100,116,139,0.1); color:var(–text); }
+
+/* SUBBAR */
+.subbar { background:#fff; border-bottom:1px solid var(–border); padding:0 20px; display:flex; align-items:center; justify-content:space-between; height:46px; flex-shrink:0; }
+.subbar-title { font-size:12px; font-weight:700; color:var(–muted); text-transform:uppercase; letter-spacing:0.06em; }
+.search-wrap { position:relative; }
+.search-wrap input { background:var(–bg); border:1px solid var(–border); border-radius:7px; padding:6px 10px 6px 30px; font-family:‘Outfit’,sans-serif; font-size:13px; color:var(–text); width:200px; outline:none; }
+.search-wrap input:focus { border-color:var(–accent); }
+.search-icon { position:absolute; left:9px; top:50%; transform:translateY(-50%); color:var(–muted); font-size:13px; }
+
+/* BOARD */
+.board { flex:1; overflow-x:auto; overflow-y:hidden; padding:16px 20px; display:flex; gap:10px; align-items:flex-start; }
+.col { flex-shrink:0; width:210px; display:flex; flex-direction:column; gap:8px; max-height:100%; }
+.col-header { background:#fff; border:1px solid var(–border); border-radius:9px; padding:9px 11px; flex-shrink:0; }
+.col-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(–muted); display:flex; align-items:center; justify-content:space-between; }
+.col-count { background:var(–bg); border-radius:20px; padding:1px 6px; font-size:10px; color:var(–text); font-weight:600; }
+.col-desc { font-size:11px; color:var(–muted); margin-top:3px; line-height:1.3; }
+.col-body { overflow-y:auto; display:flex; flex-direction:column; gap:7px; flex:1; padding-bottom:8px; }
+
+.col:nth-child(1) .col-header { border-top:3px solid #64748b; }
+.col:nth-child(2) .col-header { border-top:3px solid var(–blue); }
+.col:nth-child(3) .col-header { border-top:3px solid var(–purple); }
+.col:nth-child(4) .col-header { border-top:3px solid #06b6d4; }
+.col:nth-child(5) .col-header { border-top:3px solid var(–accent); }
+.col:nth-child(6) .col-header { border-top:3px solid var(–orange); }
+.col:nth-child(7) .col-header { border-top:3px solid #ec4899; }
+.col:nth-child(8) .col-header { border-top:3px solid var(–purple); }
+.col:nth-child(9) .col-header { border-top:3px solid var(–green); }
+.col:nth-child(10) .col-header { border-top:3px solid var(–accent); }
+.col:nth-child(11) .col-header { border-top:3px solid var(–green); }
+
+/* CARD */
+.card { background:#fff; border:1px solid var(–border); border-radius:9px; padding:11px; cursor:pointer; transition:all 0.15s; box-shadow:var(–shadow); }
+.card:hover { border-color:var(–accent); box-shadow:var(–shadow-lg); transform:translateY(-1px); }
+.card-name { font-size:13px; font-weight:700; margin-bottom:3px; }
+.card-meta { font-size:11px; color:var(–muted); margin-bottom:7px; }
+.card-progress { display:flex; gap:2px; margin-bottom:7px; }
+.prog-dot { height:3px; flex:1; border-radius:2px; background:var(–border); }
+.prog-dot.done { background:var(–green); }
+.prog-dot.active { background:var(–accent); }
+.card-tags { display:flex; gap:3px; flex-wrap:wrap; margin-bottom:7px; }
+.tag { font-size:10px; padding:2px 6px; border-radius:20px; font-weight:600; }
+.tag-hot { background:rgba(239,68,68,0.1); color:var(–red); }
+.tag-warm { background:rgba(245,158,11,0.1); color:var(–accent); }
+.tag-cold { background:rgba(100,116,139,0.1); color:var(–muted); }
+.tag-pv { background:rgba(245,158,11,0.12); color:var(–orange); }
+.tag-wp { background:rgba(59,130,246,0.12); color:var(–blue); }
+.card-warn { margin-top:6px; padding:4px 8px; background:rgba(239,68,68,0.07); border-radius:5px; font-size:11px; color:var(–red); }
+.card-btns { display:flex; gap:4px; margin-top:8px; }
+
+/* PANEL */
+.overlay { position:fixed; inset:0; background:rgba(26,31,46,0.4); z-index:200; display:none; backdrop-filter:blur(2px); }
+.overlay.open { display:block; }
+.panel { position:fixed; top:0; right:0; width:460px; max-width:100vw; height:100vh; background:#fff; z-index:201; overflow-y:auto; box-shadow:-8px 0 32px rgba(0,0,0,0.12); transform:translateX(100%); transition:transform 0.25s ease; }
+.panel.open { transform:translateX(0); }
+.panel-head { background:var(–text); padding:18px 20px; display:flex; align-items:flex-start; justify-content:space-between; }
+.panel-title { font-size:19px; font-weight:800; color:#fff; }
+.panel-sub { font-size:12px; color:rgba(255,255,255,0.5); margin-top:3px; }
+.close-btn { background:rgba(255,255,255,0.1); border:none; border-radius:7px; width:30px; height:30px; color:#fff; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.close-btn:hover { background:rgba(255,255,255,0.2); }
+.panel-body { padding:20px; display:flex; flex-direction:column; gap:18px; }
+.section { }
+.section-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(–muted); margin-bottom:10px; padding-bottom:7px; border-bottom:1px solid var(–border); }
+
+/* INFO GRID */
+.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.info-item { background:var(–bg); border-radius:7px; padding:9px 11px; }
+.info-item label { font-size:10px; color:var(–muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:2px; }
+.info-item span { font-size:13px; font-weight:600; font-family:‘JetBrains Mono’,monospace; }
+.info-item.full { grid-column:1/-1; }
+.notes-box { background:var(–bg); border:1px solid var(–border); border-radius:7px; padding:10px; font-size:13px; line-height:1.6; }
+
+/* TP LIST */
+.tp-list { display:flex; flex-direction:column; gap:6px; }
+.tp-item { display:flex; align-items:center; gap:9px; padding:9px 11px; border-radius:7px; border:1px solid var(–border); background:var(–bg); }
+.tp-item.done-tp { background:rgba(16,185,129,0.05); border-color:rgba(16,185,129,0.2); }
+.tp-item.active-tp { background:rgba(245,158,11,0.07); border-color:rgba(245,158,11,0.3); }
+.tp-check { width:20px; height:20px; border-radius:50%; border:2px solid var(–border); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:10px; cursor:pointer; transition:all 0.15s; }
+.tp-check.is-done { background:var(–green); border-color:var(–green); color:#fff; }
+.tp-check.is-current { border-color:var(–accent); background:rgba(245,158,11,0.15); color:var(–accent); font-weight:700; }
+.tp-label { font-size:12px; font-weight:500; flex:1; }
+.tp-meta { font-size:10px; color:var(–muted); }
+
+/* EDIT FORM */
+.edit-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.fg { display:flex; flex-direction:column; gap:4px; }
+.fg.full { grid-column:1/-1; }
+.fg label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(–muted); }
+.fg input, .fg select, .fg textarea {
+background:var(–bg); border:1px solid var(–border); border-radius:7px;
+padding:8px 10px; font-family:‘Outfit’,sans-serif; font-size:13px; color:var(–text); outline:none;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(–accent); background:#fff; }
+.fg textarea { resize:vertical; min-height:60px; }
+
+/* PD SYNC */
+.pd-box { background:var(–bg); border-radius:8px; padding:12px; }
+.pd-box-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(–muted); margin-bottom:8px; }
+.pd-textarea { width:100%; background:#fff; border:1px solid var(–border); border-radius:7px; padding:8px 10px; font-family:‘Outfit’,sans-serif; font-size:13px; color:var(–text); resize:vertical; min-height:65px; outline:none; margin-bottom:8px; display:block; }
+.pd-textarea:focus { border-color:var(–accent); }
+
+/* MODAL */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:300; display:none; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
+.modal-overlay.open { display:flex; }
+.modal { background:#fff; border-radius:14px; width:540px; max-width:95vw; max-height:90vh; overflow-y:auto; box-shadow:var(–shadow-lg); }
+.modal-head { padding:20px 20px 0; display:flex; align-items:center; justify-content:space-between; }
+.modal-head h2 { font-size:18px; font-weight:800; }
+.modal-body { padding:18px 20px 20px; }
+.modal-actions { display:flex; gap:8px; justify-content:flex-end; padding-top:14px; border-top:1px solid var(–border); margin-top:14px; }
+
+/* TOAST */
+.toast-wrap { position:fixed; bottom:20px; right:20px; z-index:999; display:flex; flex-direction:column; gap:7px; pointer-events:none; }
+.toast { background:var(–text); color:#fff; padding:10px 14px; border-radius:9px; font-size:13px; box-shadow:var(–shadow-lg); display:flex; align-items:center; gap:7px; border-left:3px solid var(–accent); animation:toastIn 0.3s ease; }
+@keyframes toastIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+@keyframes cardIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+.card { animation:cardIn 0.2s ease forwards; opacity:0; }
+
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-thumb { background:var(–border); border-radius:2px; }
 </style>
+
 </head>
 <body>
 
 <nav class="topnav">
   <div class="logo">Solar<span>CRM</span></div>
   <div class="nav-stats">
-    <div class="ns">🔴 <strong id="sr">0</strong> Risiko</div>
-    <div class="ns">🟡 <strong id="sa">0</strong> Aktiv</div>
-    <div class="ns">🟢 <strong id="sw">0</strong> Abschluss</div>
-    <div class="ns">💰 <strong id="sv">0€</strong></div>
+    <div class="nav-stat">🔴 <strong id="s-risk">0</strong> Risiko</div>
+    <div class="nav-stat">🟡 <strong id="s-active">0</strong> Aktiv</div>
+    <div class="nav-stat">🟢 <strong id="s-won">0</strong> Abschluss</div>
+    <div class="nav-stat">💰 <strong id="s-vol">0€</strong></div>
   </div>
-  <div class="nav-btns">
-    <button class="btn btn-ghost" onclick="reqN()">🔔</button>
-    <button class="btn btn-pd" onclick="showPD()">🔗 Pipedrive</button>
-    <button class="btn btn-primary" onclick="showAdd()">+ Neuer Kunde</button>
+  <div class="nav-actions">
+    <button class="btn btn-ghost" onclick="reqNotif()">🔔</button>
+    <button class="btn btn-pd" onclick="openPD()">🔗 Pipedrive</button>
+    <button class="btn btn-primary" onclick="openAdd()">+ Neuer Kunde</button>
   </div>
 </nav>
 
 <div class="subbar">
-  <span class="sub-title">⚡ Pipeline · 11 Touchpoints</span>
+  <span class="subbar-title">⚡ Pipeline · 11 Touchpoints</span>
   <div class="search-wrap">
-    <span class="si">🔍</span>
-    <input type="text" id="q" placeholder="Kunde suchen..." oninput="render()">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Kunde suchen..." oninput="renderBoard()">
   </div>
 </div>
 
 <div class="board" id="board"></div>
 
-<div class="overlay" id="ov" onclick="closeP()"></div>
+<!-- OVERLAY + PANEL -->
+
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
-  <div class="panel-hd">
+  <div class="panel-head">
     <div>
-      <div class="panel-ti" id="pti">–</div>
-      <div class="panel-su" id="psu">–</div>
+      <div class="panel-title" id="p-name">–</div>
+      <div class="panel-sub" id="p-sub">–</div>
     </div>
-    <button class="xbtn" onclick="closeP()">✕</button>
+    <button class="close-btn" onclick="closePanel()">✕</button>
   </div>
-  <div class="panel-body" id="pbody"></div>
+  <div class="panel-body" id="panel-body"></div>
 </div>
 
-<div class="modal-ov" id="addM">
+<!-- ADD MODAL -->
+
+<div class="modal-overlay" id="addModal">
   <div class="modal">
-    <div class="modal-hd">
+    <div class="modal-head">
       <h2>Neuen Kunden anlegen</h2>
-      <button class="xbtn" style="background:var(--bg);color:var(--text)" onclick="closeAdd()">✕</button>
+      <button class="close-btn" style="background:var(--bg);color:var(--text);" onclick="closeAdd()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="egrid">
-        <div class="fg"><label>Name *</label><input id="an" placeholder="Max Mustermann"></div>
-        <div class="fg"><label>Telefon</label><input id="ap" placeholder="+49 151..."></div>
-        <div class="fg"><label>E-Mail</label><input id="ae" placeholder="max@mail.de"></div>
-        <div class="fg"><label>WhatsApp</label><input id="aw" placeholder="+49 151..."></div>
+      <div class="edit-grid">
+        <div class="fg"><label>Name *</label><input id="a-name" placeholder="Max Mustermann"></div>
+        <div class="fg"><label>Telefon</label><input id="a-phone" placeholder="+49 151..."></div>
+        <div class="fg"><label>E-Mail</label><input id="a-email" placeholder="max@mail.de"></div>
+        <div class="fg"><label>WhatsApp</label><input id="a-wa" placeholder="+49 151..."></div>
         <div class="fg"><label>Produkt</label>
-          <select id="aprod">
+          <select id="a-product">
             <option value="PV">☀️ Photovoltaik</option>
-            <option value="PV+Speicher">☀️🔋 PV+Speicher</option>
+            <option value="PV+Speicher">☀️🔋 PV + Speicher</option>
             <option value="WP">🌡️ Wärmepumpe</option>
-            <option value="PV+WP">☀️🌡️ PV+WP</option>
+            <option value="PV+WP">☀️🌡️ PV + WP</option>
           </select>
         </div>
         <div class="fg"><label>Priorität</label>
-          <select id="aprio">
+          <select id="a-prio">
             <option value="hot">🔴 Heiß</option>
             <option value="warm">🟡 Warm</option>
             <option value="cold">🔵 Kalt</option>
           </select>
         </div>
-        <div class="fg"><label>Aufmaß-Termin</label><input id="ad" type="date"></div>
-        <div class="fg"><label>Angebots-Termin</label><input id="aod" type="date"></div>
-        <div class="fg"><label>Strom kWh/Jahr</label><input id="ast" placeholder="4500"></div>
-        <div class="fg"><label>€/kWh</label><input id="asp" placeholder="0.32"></div>
-        <div class="fg"><label>kWp</label><input id="akwp" placeholder="12"></div>
-        <div class="fg"><label>Preis €</label><input id="apr" placeholder="22000"></div>
-        <div class="fg full"><label>Painpoint</label><input id="apain" placeholder="Hohe Stromkosten..."></div>
-        <div class="fg full"><label>Notizen</label><textarea id="anotes"></textarea></div>
+        <div class="fg"><label>Aufmaß-Termin</label><input id="a-date" type="date"></div>
+        <div class="fg"><label>Angebots-Termin</label><input id="a-offerdate" type="date"></div>
+        <div class="fg"><label>Strom kWh/Jahr</label><input id="a-strom" placeholder="4500"></div>
+        <div class="fg"><label>Preis €/kWh</label><input id="a-strompreis" placeholder="0.32"></div>
+        <div class="fg"><label>Anlagengröße kWp</label><input id="a-kwp" placeholder="12"></div>
+        <div class="fg"><label>Angebotspreis €</label><input id="a-preis" placeholder="22000"></div>
+        <div class="fg full"><label>Painpoint</label><input id="a-pain" placeholder="Hohe Stromkosten..."></div>
+        <div class="fg full"><label>Notizen</label><textarea id="a-notes" placeholder="Weitere Infos..."></textarea></div>
       </div>
-      <div class="modal-act">
+      <div class="modal-actions">
         <button class="btn btn-muted" onclick="closeAdd()">Abbrechen</button>
-        <button class="btn btn-primary" onclick="addC()">✓ Anlegen</button>
+        <button class="btn btn-primary" onclick="addCustomer()">✓ Anlegen</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal-ov" id="pdM">
+<!-- PIPEDRIVE MODAL -->
+
+<div class="modal-overlay" id="pdModal">
   <div class="modal">
-    <div class="modal-hd">
+    <div class="modal-head">
       <h2>🔗 Pipedrive Import</h2>
-      <button class="xbtn" style="background:var(--bg);color:var(--text)" onclick="closePD()">✕</button>
+      <button class="close-btn" style="background:var(--bg);color:var(--text);" onclick="closePD()">✕</button>
     </div>
     <div class="modal-body">
-      <div id="pds1">
-        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">
-          Token findest du unter: <strong style="color:var(--text)">Einstellungen → Persönliche Einstellungen → API</strong>
-        </p>
-        <div class="fg full" style="margin-bottom:12px">
-          <label>API Token</label>
-          <input id="pdt" type="password" placeholder="Token einfügen...">
+      <div id="pd-step1">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">API Token: <strong style="color:var(--text);">Einstellungen → Persönliche Einstellungen → API</strong></p>
+        <div class="fg full" style="margin-bottom:12px;">
+          <label>Pipedrive API Token</label>
+          <input id="pd-token" type="password" placeholder="Token einfügen...">
         </div>
-        <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:10px;font-size:12px;color:var(--muted);margin-bottom:14px">
-          🔒 Token wird nur lokal gespeichert.
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:7px;padding:10px;font-size:12px;color:var(--muted);margin-bottom:14px;">
+          🔒 Token wird nur lokal gespeichert – nie übertragen.
         </div>
-        <div class="modal-act" style="border:none;padding:0;margin:0">
+        <div class="modal-actions" style="border:none;padding:0;margin:0;">
           <button class="btn btn-muted" onclick="closePD()">Abbrechen</button>
-          <button class="btn btn-primary" onclick="loadDeals()">🔍 Deals laden</button>
+          <button class="btn btn-primary" onclick="loadPDDeals()">🔍 Deals laden</button>
         </div>
       </div>
-      <div id="pds2" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <span id="pdfound" style="font-size:13px;font-weight:600"></span>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-sm btn-muted" onclick="pdSel(true)">Alle</button>
-            <button class="btn btn-sm btn-muted" onclick="pdSel(false)">Keine</button>
+      <div id="pd-step2" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span id="pd-found" style="font-size:13px;font-weight:600;"></span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-sm btn-muted" onclick="pdAll(true)">Alle</button>
+            <button class="btn btn-sm btn-muted" onclick="pdAll(false)">Keine</button>
           </div>
         </div>
-        <div id="pdlist" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px"></div>
-        <div id="pdok" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:7px;padding:9px 12px;font-size:13px;color:var(--green);margin-bottom:10px"></div>
-        <div class="modal-act" style="border:none;padding:0;margin:0">
+        <div id="pd-list" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px;"></div>
+        <div id="pd-ok" style="display:none;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:7px;padding:9px 12px;font-size:13px;color:var(--green);margin-bottom:10px;"></div>
+        <div class="modal-actions" style="border:none;padding:0;margin:0;">
           <button class="btn btn-muted" onclick="pdBack()">← Zurück</button>
           <button class="btn btn-primary" onclick="pdImport()">✓ Importieren</button>
         </div>
@@ -233,502 +290,557 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);heig
   </div>
 </div>
 
-<div class="toasts" id="toasts"></div>
+<div class="toast-wrap" id="toasts"></div>
 
 <script>
-var PROXY = 'https://pipedrive-proxy.ghd5cfkf55.workers.dev';
+const PROXY = 'https://pipedrive-proxy.ghd5cfkf55.workers.dev';
 
-var TPS = [
-  {i:'📞',l:'Telefonat',d:'Termin vereinbaren'},
-  {i:'📧',l:'Terminbestätigung',d:'Mail mit Details'},
-  {i:'📱',l:'Tag-vor-SMS',d:'Erinnerung + Abrechnungen'},
-  {i:'📞',l:'Anruf unterwegs',d:'Wo kann ich parken?'},
-  {i:'🏠',l:'Aufmaß',d:'Vor Ort Termin'},
-  {i:'📋',l:'Zusammenfassung',d:'Strom, Gas, Painpoint'},
-  {i:'📱',l:'Info WhatsApp',d:'PDF / Video senden'},
-  {i:'📧',l:'Angebot',d:'Aurora Angebot per Mail'},
-  {i:'📞',l:'Nachfass-Anruf',d:'Angebot erhalten?'},
-  {i:'📞',l:'FOMO-Anruf',d:'Komme 5 Min später – letzter Kunde kaufte auch!'},
-  {i:'🤝',l:'Abschluss',d:'Angebotsbesprechung → Kauf!'}
+const TPS = [
+  {icon:'📞', label:'Telefonat', desc:'Termin vereinbaren'},
+  {icon:'📧', label:'Terminbestätigung', desc:'Mail mit Details'},
+  {icon:'📱', label:'Tag-vor-SMS', desc:'Erinnerung + Abrechnungen'},
+  {icon:'📞', label:'Anruf unterwegs', desc:'Wo kann ich parken?'},
+  {icon:'🏠', label:'Aufmaß', desc:'Vor Ort Termin'},
+  {icon:'📋', label:'Zusammenfassung', desc:'Strom, Gas, Painpoint'},
+  {icon:'📱', label:'Info WhatsApp', desc:'PDF / Video senden'},
+  {icon:'📧', label:'Angebot', desc:'Aurora Angebot per Mail'},
+  {icon:'📞', label:'Nachfass-Anruf', desc:'Angebot erhalten?'},
+  {icon:'📞', label:'FOMO-Anruf', desc:'5 Min später – letzter Kunde kaufte auch!'},
+  {icon:'🤝', label:'Abschluss', desc:'Angebotsbesprechung → Kauf!'},
 ];
 
-var customers = [
-  {id:1,name:'Schäffler',phone:'+49 151 11111111',email:'s@mail.de',wa:'+4915111111111',product:'PV+Speicher',prio:'hot',date:'2026-04-11',offerdate:'2026-04-18',strom:'5200',strompreis:'0.34',kwp:'14',preis:'26000',pain:'Hohe Stromrechnung',notes:'Speicher gewünscht',step:8,completed:[0,1,2,3,4,5,6,7],pdId:null},
-  {id:2,name:'Budel',phone:'+49 151 22222222',email:'b@mail.de',wa:'+4915122222222',product:'PV',prio:'warm',date:'2026-03-20',offerdate:'2026-03-27',strom:'4100',strompreis:'0.32',kwp:'10',preis:'18500',pain:'Stromkosten senken',notes:'',step:10,completed:[0,1,2,3,4,5,6,7,8,9],pdId:null},
-  {id:3,name:'Kempen',phone:'+49 151 33333333',email:'k@mail.de',wa:'+4915133333333',product:'PV+WP',prio:'hot',date:'2026-03-24',offerdate:'2026-04-02',strom:'6800',strompreis:'0.33',kwp:'18',preis:'38000',pain:'Gas raus komplett',notes:'PV+WP Kombi',step:5,completed:[0,1,2,3,4],pdId:null},
-  {id:4,name:'Hauck',phone:'+49 151 44444444',email:'h@mail.de',wa:'+4915144444444',product:'PV',prio:'warm',date:'',offerdate:'',strom:'4200',strompreis:'0.32',kwp:'11',preis:'20000',pain:'NB anmelden',notes:'Finanzierung klären',step:0,completed:[],pdId:null},
-  {id:5,name:'Richter',phone:'+49 151 55555555',email:'r@mail.de',wa:'+4915155555555',product:'PV',prio:'hot',date:'',offerdate:'2026-03-28',strom:'5000',strompreis:'0.33',kwp:'13',preis:'24000',pain:'Rentner fixe Kosten',notes:'Termin unklar!',step:9,completed:[0,1,2,3,4,5,6,7,8],pdId:null}
+let customers = [
+  {id:1,name:'Schäffler / Lurpion',phone:'+49 151 11111111',email:'schaeffler@mail.de',wa:'+4915111111111',product:'PV+Speicher',prio:'hot',date:'2026-04-11',offerdate:'2026-04-18',strom:'5200',strompreis:'0.34',kwp:'14',preis:'26000',pain:'Hohe Stromrechnung',notes:'Speicher gewünscht',step:8,completed:[0,1,2,3,4,5,6,7],pdId:null},
+  {id:2,name:'Budel',phone:'+49 151 22222222',email:'budel@mail.de',wa:'+4915122222222',product:'PV',prio:'warm',date:'2026-03-20',offerdate:'2026-03-27',strom:'4100',strompreis:'0.32',kwp:'10',preis:'18500',pain:'Stromkosten senken',notes:'',step:10,completed:[0,1,2,3,4,5,6,7,8,9],pdId:null},
+  {id:3,name:'Kempen',phone:'+49 151 33333333',email:'kempen@mail.de',wa:'+4915133333333',product:'PV+WP',prio:'hot',date:'2026-03-24',offerdate:'2026-04-02',strom:'6800',strompreis:'0.33',kwp:'18',preis:'38000',pain:'Gas raus komplett',notes:'PV + WP Kombi',step:8,completed:[0,1,2,3,4,5,6,7],pdId:null},
+  {id:4,name:'Dechmann',phone:'+49 151 44444444',email:'dechmann@mail.de',wa:'+4915144444444',product:'PV',prio:'warm',date:'2026-03-27',offerdate:'',strom:'3800',strompreis:'0.31',kwp:'9',preis:'16000',pain:'Neubau mit PV',notes:'',step:5,completed:[0,1,2,3,4],pdId:null},
+  {id:5,name:'Hauck',phone:'+49 151 55555555',email:'hauck@mail.de',wa:'+4915155555555',product:'PV',prio:'warm',date:'',offerdate:'',strom:'4200',strompreis:'0.32',kwp:'11',preis:'20000',pain:'NB anmelden',notes:'Finanzierung klären',step:0,completed:[],pdId:null},
+  {id:6,name:'Richter',phone:'+49 151 66666666',email:'richter@mail.de',wa:'+4915166666666',product:'PV',prio:'hot',date:'',offerdate:'2026-03-28',strom:'5000',strompreis:'0.33',kwp:'13',preis:'24000',pain:'Rentner fixe Kosten',notes:'Termin unklar!',step:9,completed:[0,1,2,3,4,5,6,7,8],pdId:null},
+  {id:7,name:'Rinaldi / Ewald',phone:'+49 151 77777777',email:'rinaldi@mail.de',wa:'+4915177777777',product:'PV',prio:'cold',date:'',offerdate:'',strom:'',strompreis:'',kwp:'',preis:'',pain:'',notes:'Erst Anfang',step:0,completed:[],pdId:null},
 ];
-var nextId = 6;
-var activeId = null;
-var pdDeals = [];
+let nextId = 8;
+let activeId = null;
+let pdDeals = [];
 
-function render() {
-  var board = document.getElementById('board');
-  var q = document.getElementById('q').value.toLowerCase();
+// ── BOARD ────────────────────────────────────────────────────────
+function renderBoard() {
+  const board = document.getElementById('board');
+  const q = document.getElementById('searchInput').value.toLowerCase();
   board.innerHTML = '';
-  var risk=0,act=0,won=0,vol=0;
-  customers.forEach(function(c) {
-    if(c.step===10) won++; else if(c.prio==='hot') risk++; else act++;
+
+  const filtered = customers.filter(c => c.name.toLowerCase().includes(q));
+  let risk=0, active=0, won=0, vol=0;
+  customers.forEach(c => {
+    if (c.step === 10) won++;
+    else if (c.prio === 'hot') risk++;
+    else active++;
     vol += parseInt(c.preis||0)||0;
   });
-  document.getElementById('sr').textContent = risk;
-  document.getElementById('sa').textContent = act;
-  document.getElementById('sw').textContent = won;
-  document.getElementById('sv').textContent = Math.round(vol/1000)+'K€';
+  document.getElementById('s-risk').textContent = risk;
+  document.getElementById('s-active').textContent = active;
+  document.getElementById('s-won').textContent = won;
+  document.getElementById('s-vol').textContent = Math.round(vol/1000) + 'K€';
 
-  TPS.forEach(function(tp, ci) {
-    var col = document.createElement('div');
+  TPS.forEach((tp, ci) => {
+    const col = document.createElement('div');
     col.className = 'col';
-    var colC = customers.filter(function(c){ return c.step===ci && c.name.toLowerCase().indexOf(q)!==-1; });
-    var hd = document.createElement('div');
-    hd.className = 'col-hd';
-    hd.innerHTML = '<div class="col-ti"><span>'+tp.i+' '+tp.l+'</span><span class="col-cnt">'+colC.length+'</span></div><div class="col-de">'+tp.d+'</div>';
-    var bd = document.createElement('div');
-    bd.className = 'col-bd';
-    colC.forEach(function(c) {
-      var card = document.createElement('div');
-      card.className = 'card';
-      var dots = '';
-      for(var d=0;d<11;d++) dots += '<div class="dot'+(c.completed.indexOf(d)!==-1?' done':d===c.step?' cur':'')+'"></div>';
-      var pt = c.prio==='hot'?'<span class="tag tag-hot">🔴 Heiß</span>':c.prio==='warm'?'<span class="tag tag-warm">🟡 Warm</span>':'<span class="tag tag-cold">🔵 Kalt</span>';
-      var warn = (c.prio==='hot'&&!c.offerdate&&c.step<10)?'<div class="card-warn">⚠️ Kein Angebotstermin!</div>':'';
-      var pdTag = c.pdId?'<span class="tag tag-pd">PD</span>':'';
-      card.innerHTML = '<div class="card-name">'+c.name+'</div>'
-        +'<div class="card-meta">Step '+(c.step+1)+'/11'+(c.date&&c.date!=='???'?' · 📅'+fmtD(c.date):(c.date==='???'?' · ⚠️ unklar':''))+'</div>'
-        +'<div class="progress">'+dots+'</div>'
-        +'<div class="tags">'+pt+'<span class="tag" style="background:rgba(245,158,11,.1);color:var(--orange)">'+c.product+'</span>'+pdTag+'</div>'
-        +warn
-        +'<div class="card-btns">'
-        +(c.wa?'<button class="btn btn-sm btn-wa">📱</button>':'')
-        +(c.email?'<button class="btn btn-sm btn-blue">📧</button>':'')
-        +(c.phone?'<button class="btn btn-sm btn-muted">📞</button>':'')
-        +'</div>';
-      // WA button
-      var btns = card.querySelectorAll('.card-btns .btn');
-      var bi = 0;
-      if(c.wa) { (function(id){ btns[bi].onclick=function(e){e.stopPropagation();doWA(id);}; })(c.id); bi++; }
-      if(c.email) { (function(id){ btns[bi].onclick=function(e){e.stopPropagation();doMail(id);}; })(c.id); bi++; }
-      if(c.phone) { (function(id){ btns[bi].onclick=function(e){e.stopPropagation();doCall(id);}; })(c.id); bi++; }
-      card.addEventListener('click', (function(id){ return function(){ openPanel(id); }; })(c.id));
-      bd.appendChild(card);
-    });
-    col.appendChild(hd);
-    col.appendChild(bd);
+    const colC = filtered.filter(c => c.step === ci);
+    col.innerHTML = `
+      <div class="col-header">
+        <div class="col-title"><span>${tp.icon} ${tp.label}</span><span class="col-count">${colC.length}</span></div>
+        <div class="col-desc">${tp.desc}</div>
+      </div>
+      <div class="col-body" id="cb-${ci}"></div>`;
     board.appendChild(col);
+    const body = col.querySelector('#cb-' + ci);
+    colC.forEach((c, i) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.animationDelay = (i*0.05)+'s';
+      let dots = '';
+      for(let d=0;d<11;d++) dots += `<div class="prog-dot ${c.completed.includes(d)?'done':d===c.step?'active':''}"></div>`;
+      const pTag = c.prio==='hot'?'<span class="tag tag-hot">🔴 Heiß</span>':c.prio==='warm'?'<span class="tag tag-warm">🟡 Warm</span>':'<span class="tag tag-cold">🔵 Kalt</span>';
+      const warn = (c.prio==='hot' && !c.offerdate && c.step < 10) ? '<div class="card-warn">⚠️ Kein Angebotstermin!</div>' : '';
+      card.innerHTML = `
+        <div class="card-name">${c.name}</div>
+        <div class="card-meta">Step ${c.step+1}/11${c.date&&c.date!=='???'?' · 📅'+fmtDate(c.date):c.date==='???'?' · ⚠️ Datum unklar':''}</div>
+        <div class="card-progress">${dots}</div>
+        <div class="card-tags">${pTag}<span class="tag tag-pv">${c.product}</span>${c.pdId?'<span class="tag" style="background:rgba(255,140,50,0.1);color:#ff8040;">PD</span>':''}</div>
+        ${warn}
+        <div class="card-btns">
+          ${c.wa?`<button class="btn btn-sm btn-wa" onclick="event.stopPropagation();openWA(${c.id})">📱</button>`:''}
+          ${c.email?`<button class="btn btn-sm btn-blue" onclick="event.stopPropagation();openMail(${c.id})">📧</button>`:''}
+          ${c.phone?`<button class="btn btn-sm btn-muted" onclick="event.stopPropagation();doCall(${c.id})">📞</button>`:''}
+        </div>`;
+      card.addEventListener('click', () => openPanel(c.id));
+      body.appendChild(card);
+    });
   });
 }
 
+// ── PANEL ────────────────────────────────────────────────────────
 function openPanel(id) {
-  var c = customers.filter(function(x){ return x.id===id; })[0];
-  if(!c) return;
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
   activeId = id;
-  document.getElementById('pti').textContent = c.name;
-  document.getElementById('psu').textContent = c.product+' · Step '+(c.step+1)+'/11';
-  var body = document.getElementById('pbody');
+  document.getElementById('p-name').textContent = c.name;
+  document.getElementById('p-sub').textContent = c.product + ' · Step ' + (c.step+1) + '/11';
+
+  const body = document.getElementById('panel-body');
   body.innerHTML = '';
 
-  // EDIT SECTION
-  var s1 = mkSec('✏️ Kundendaten bearbeiten');
-  var eg = document.createElement('div');
-  eg.className = 'egrid';
-  eg.innerHTML =
-    '<div class="fg"><label>Name</label><input id="ef-n" value="'+esc(c.name)+'"></div>'
-    +'<div class="fg"><label>Telefon</label><input id="ef-p" value="'+esc(c.phone)+'"></div>'
-    +'<div class="fg"><label>E-Mail</label><input id="ef-e" value="'+esc(c.email)+'"></div>'
-    +'<div class="fg"><label>WhatsApp</label><input id="ef-w" value="'+esc(c.wa)+'"></div>'
-    +'<div class="fg"><label>Produkt</label><select id="ef-prod">'
-      +'<option value="PV"'+(c.product==='PV'?' selected':'')+'>☀️ PV</option>'
-      +'<option value="PV+Speicher"'+(c.product==='PV+Speicher'?' selected':'')+'>☀️🔋 PV+Speicher</option>'
-      +'<option value="WP"'+(c.product==='WP'?' selected':'')+'>🌡️ WP</option>'
-      +'<option value="PV+WP"'+(c.product==='PV+WP'?' selected':'')+'>☀️🌡️ PV+WP</option>'
-    +'</select></div>'
-    +'<div class="fg"><label>Priorität</label><select id="ef-prio">'
-      +'<option value="hot"'+(c.prio==='hot'?' selected':'')+'>🔴 Heiß</option>'
-      +'<option value="warm"'+(c.prio==='warm'?' selected':'')+'>🟡 Warm</option>'
-      +'<option value="cold"'+(c.prio==='cold'?' selected':'')+'>🔵 Kalt</option>'
-    +'</select></div>'
-    +'<div class="fg"><label>Aufmaß-Termin</label><input id="ef-d" type="date" value="'+(c.date&&c.date!=='???'?c.date:'')+'"></div>'
-    +'<div class="fg"><label>Angebots-Termin</label><input id="ef-od" type="date" value="'+(c.offerdate||'')+'"></div>'
-    +'<div class="fg"><label>Strom kWh/Jahr</label><input id="ef-st" value="'+esc(c.strom)+'"></div>'
-    +'<div class="fg"><label>€/kWh</label><input id="ef-sp" value="'+esc(c.strompreis)+'"></div>'
-    +'<div class="fg"><label>kWp</label><input id="ef-kwp" value="'+esc(c.kwp)+'"></div>'
-    +'<div class="fg"><label>Preis €</label><input id="ef-pr" value="'+esc(c.preis)+'"></div>'
-    +'<div class="fg full"><label>Painpoint</label><input id="ef-pain" value="'+esc(c.pain)+'"></div>'
-    +'<div class="fg full"><label>Notizen</label><textarea id="ef-notes">'+esc(c.notes)+'</textarea></div>';
+  // 1. Kundendaten bearbeiten
+  const editSec = mkSection('✏️ Kundendaten bearbeiten');
+  editSec.innerHTML += `
+    <div class="edit-grid" id="edit-grid-${id}">
+      <div class="fg"><label>Name</label><input class="ef" id="ef-name" value="${esc(c.name)}"></div>
+      <div class="fg"><label>Telefon</label><input class="ef" id="ef-phone" value="${esc(c.phone)}"></div>
+      <div class="fg"><label>E-Mail</label><input class="ef" id="ef-email" value="${esc(c.email)}"></div>
+      <div class="fg"><label>WhatsApp</label><input class="ef" id="ef-wa" value="${esc(c.wa)}"></div>
+      <div class="fg"><label>Produkt</label>
+        <select class="ef" id="ef-product">
+          <option value="PV" ${c.product==='PV'?'selected':''}>☀️ PV</option>
+          <option value="PV+Speicher" ${c.product==='PV+Speicher'?'selected':''}>☀️🔋 PV+Speicher</option>
+          <option value="WP" ${c.product==='WP'?'selected':''}>🌡️ WP</option>
+          <option value="PV+WP" ${c.product==='PV+WP'?'selected':''}>☀️🌡️ PV+WP</option>
+        </select>
+      </div>
+      <div class="fg"><label>Priorität</label>
+        <select class="ef" id="ef-prio">
+          <option value="hot" ${c.prio==='hot'?'selected':''}>🔴 Heiß</option>
+          <option value="warm" ${c.prio==='warm'?'selected':''}>🟡 Warm</option>
+          <option value="cold" ${c.prio==='cold'?'selected':''}>🔵 Kalt</option>
+        </select>
+      </div>
+      <div class="fg"><label>Aufmaß-Termin</label><input class="ef" id="ef-date" type="date" value="${c.date&&c.date!=='???'?c.date:''}"></div>
+      <div class="fg"><label>Angebots-Termin</label><input class="ef" id="ef-offerdate" type="date" value="${c.offerdate||''}"></div>
+      <div class="fg"><label>Strom kWh/Jahr</label><input class="ef" id="ef-strom" value="${esc(c.strom)}"></div>
+      <div class="fg"><label>€/kWh</label><input class="ef" id="ef-strompreis" value="${esc(c.strompreis)}"></div>
+      <div class="fg"><label>kWp</label><input class="ef" id="ef-kwp" value="${esc(c.kwp)}"></div>
+      <div class="fg"><label>Preis €</label><input class="ef" id="ef-preis" value="${esc(c.preis)}"></div>
+      <div class="fg full"><label>Painpoint</label><input class="ef" id="ef-pain" value="${esc(c.pain)}"></div>
+      <div class="fg full"><label>Notizen</label><textarea class="ef" id="ef-notes">${esc(c.notes)}</textarea></div>
 
-s1.appendChild(eg);
-var sbRow = document.createElement(‘div’);
-sbRow.style.cssText = ‘display:flex;gap:8px;margin-top:10px’;
-var saveBtn = document.createElement(‘button’);
-saveBtn.className = ‘btn btn-primary btn-sm’;
-saveBtn.textContent = ‘💾 Speichern’;
-saveBtn.onclick = function(){ saveC(id); };
-var delBtn = document.createElement(‘button’);
-delBtn.className = ‘btn btn-red btn-sm’;
-delBtn.textContent = ‘🗑 Löschen’;
-delBtn.onclick = function(){ delC(id); };
-sbRow.appendChild(saveBtn);
-sbRow.appendChild(delBtn);
-s1.appendChild(sbRow);
-body.appendChild(s1);
+```
+</div>
+<div style="display:flex;gap:8px;margin-top:10px;">
+  <button class="btn btn-primary btn-sm" id="save-btn-${id}">💾 Speichern</button>
+  <button class="btn btn-red btn-sm" id="del-btn-${id}">🗑 Löschen</button>
+</div>`;
+```
 
-// VERBRAUCH
-if(c.strom && c.strompreis) {
-var s2 = mkSec(‘📊 Verbrauchsdaten’);
-var yearly = Math.round(parseInt(c.strom)*parseFloat(c.strompreis));
-var ig = document.createElement(‘div’);
-ig.className = ‘igrid’;
-ig.innerHTML = ‘<div class="ii"><label>Strom/Jahr</label><span>’+parseInt(c.strom).toLocaleString(‘de’)+’ kWh</span></div>’
-+’<div class="ii"><label>€/kWh</label><span>’+c.strompreis+‘€</span></div>’
-+(c.kwp?’<div class="ii"><label>Anlage</label><span>’+c.kwp+’ kWp</span></div>’:’’)
-+(c.preis?’<div class="ii"><label>Preis</label><span>’+parseInt(c.preis).toLocaleString(‘de’)+‘€</span></div>’:’’)
-+’<div class="ii full" style="border-left:3px solid var(--red)"><label>⚡ Kosten ohne PV</label><span style="color:var(--red)">’+yearly.toLocaleString(‘de’)+‘€/Jahr</span></div>’;
-s2.appendChild(ig);
-body.appendChild(s2);
+body.appendChild(editSec);
+
+// 2. Verbrauchsinfo
+if (c.strom && c.strompreis) {
+const infoSec = mkSection(‘📊 Verbrauchsdaten’);
+const yearly = Math.round(parseInt(c.strom) * parseFloat(c.strompreis));
+infoSec.innerHTML += ` <div class="info-grid"> <div class="info-item"><label>Strom/Jahr</label><span>${parseInt(c.strom).toLocaleString('de')} kWh</span></div> <div class="info-item"><label>€/kWh</label><span>${c.strompreis}€</span></div> ${c.kwp?`<div class="info-item"><label>Anlage</label><span>${c.kwp} kWp</span></div>`:''} ${c.preis?`<div class="info-item"><label>Angebotspreis</label><span>${parseInt(c.preis).toLocaleString(‘de’)}€</span></div>`:''} <div class="info-item full" style="border-left:3px solid var(--red)"><label>⚡ Kosten ohne PV</label><span style="color:var(--red)">${yearly.toLocaleString('de')}€/Jahr</span></div> </div>`;
+body.appendChild(infoSec);
 }
 
-// TOUCHPOINTS
-var s3 = mkSec(‘🎯 Touchpoints’);
-var tpl = document.createElement(‘div’);
-tpl.className = ‘tplist’;
-TPS.forEach(function(tp, i) {
-var done = c.completed.indexOf(i)!==-1;
-var cur = c.step===i;
-var item = document.createElement(‘div’);
-item.className = ‘tpi’+(done?’ tp-done’:cur?’ tp-cur’:’’);
-var ck = document.createElement(‘div’);
-ck.className = ‘tpck’+(done?’ ck-done’:cur?’ ck-cur’:’’);
-ck.textContent = done?‘✓’:cur?‘→’:’’;
-ck.onclick = (function(cid,ti){ return function(){ toggleTP(cid,ti); }; })(id,i);
-var ct = document.createElement(‘div’);
-ct.style.flex = ‘1’;
-ct.innerHTML = ‘<div style="font-size:12px;font-weight:500">’+tp.i+’ ‘+tp.l+’</div><div style="font-size:10px;color:var(--muted)">’+tp.d+’</div>’;
-item.appendChild(ck);
-item.appendChild(ct);
-// action button
-var ab = null;
-if((i===0||i===3||i===8||i===9)&&c.phone){ ab=document.createElement(‘button’);ab.className=‘btn btn-sm btn-muted’;ab.textContent=‘📞’;ab.onclick=(function(cid){return function(){doCall(cid);};})(id); }
-else if((i===1||i===7)&&c.email){ ab=document.createElement(‘button’);ab.className=‘btn btn-sm btn-blue’;ab.textContent=‘📧’;ab.onclick=(function(cid){return function(){doMail(cid);};})(id); }
-else if((i===2||i===6)&&c.wa){ ab=document.createElement(‘button’);ab.className=‘btn btn-sm btn-wa’;ab.textContent=‘📱’;ab.onclick=(function(cid){return function(){doWA(cid);};})(id); }
-if(ab) item.appendChild(ab);
-tpl.appendChild(item);
+// 3. Touchpoints
+const tpSec = mkSection(‘🎯 Touchpoints’);
+const tpList = document.createElement(‘div’);
+tpList.className = ‘tp-list’;
+TPS.forEach((tp, i) => {
+const done = c.completed.includes(i);
+const cur = c.step === i;
+const item = document.createElement(‘div’);
+item.className = ‘tp-item’ + (done?’ done-tp’:cur?’ active-tp’:’’);
+const check = document.createElement(‘div’);
+check.className = ‘tp-check’ + (done?’ is-done’:cur?’ is-current’:’’);
+check.textContent = done ? ‘✓’ : cur ? ‘→’ : ‘’;
+check.onclick = () => toggleTP(id, i);
+const content = document.createElement(‘div’);
+content.style.flex = ‘1’;
+content.innerHTML = `<div class="tp-label">${tp.icon} ${tp.label}</div><div class="tp-meta">${tp.desc}</div>`;
+item.appendChild(check);
+item.appendChild(content);
+// Action button
+let ab = null;
+if ((i===0||i===3||i===8||i===9) && c.phone) { ab=document.createElement(‘button’); ab.className=‘btn btn-sm btn-muted’; ab.textContent=‘📞’; ab.onclick=()=>doCall(id); }
+else if ((i===1||i===7) && c.email) { ab=document.createElement(‘button’); ab.className=‘btn btn-sm btn-blue’; ab.textContent=‘📧’; ab.onclick=()=>openMail(id); }
+else if ((i===2||i===6) && c.wa) { ab=document.createElement(‘button’); ab.className=‘btn btn-sm btn-wa’; ab.textContent=‘📱’; ab.onclick=()=>openWA(id); }
+if (ab) item.appendChild(ab);
+tpList.appendChild(item);
 });
-s3.appendChild(tpl);
-body.appendChild(s3);
+tpSec.appendChild(tpList);
+body.appendChild(tpSec);
 
-// PIPEDRIVE SYNC
-var s4 = mkSec(‘🔗 Pipedrive Sync’);
-if(c.pdId) {
-var pdInfo = document.createElement(‘div’);
-pdInfo.style.cssText = ‘font-size:11px;color:var(–muted);margin-bottom:10px’;
-pdInfo.innerHTML = ‘Deal <strong style="color:#ff8040">#’+c.pdId+’</strong>’;
-s4.appendChild(pdInfo);
-
-```
-var nb = document.createElement('div');
-nb.className = 'pdb';
-nb.innerHTML = '<div class="pdb-ti">📝 Notiz hinzufügen</div>';
-var ta = document.createElement('textarea');
-ta.className = 'pd-ta';
-ta.placeholder = 'Notiz wird direkt in Pipedrive gespeichert...';
-var svn = document.createElement('button');
-svn.className = 'btn btn-sm btn-primary';
-svn.textContent = '→ In Pipedrive speichern';
-svn.onclick = (function(cid,textarea){ return function(){ pdNote(cid,textarea.value); }; })(id,ta);
+// 4. Pipedrive Sync
+const pdSec = mkSection(‘🔗 Pipedrive Sync’);
+if (c.pdId) {
+pdSec.innerHTML += `<div style="margin-bottom:8px;font-size:11px;color:var(--muted);">Verknüpft mit Deal <strong style="color:#ff8040;">#${c.pdId}</strong></div>`;
+// Notiz Box
+const nb = document.createElement(‘div’);
+nb.className = ‘pd-box’;
+nb.style.marginBottom = ‘8px’;
+nb.innerHTML = ‘<div class="pd-box-title">📝 Notiz hinzufügen</div>’;
+const ta = document.createElement(‘textarea’);
+ta.className = ‘pd-textarea’;
+ta.placeholder = ‘Notiz wird direkt in Pipedrive gespeichert…’;
+ta.id = ‘pd-ta-’ + id;
+const saveNoteBtn = document.createElement(‘button’);
+saveNoteBtn.className = ‘btn btn-sm btn-primary’;
+saveNoteBtn.textContent = ‘→ In Pipedrive speichern’;
+saveNoteBtn.onclick = () => pdSaveNote(id);
 nb.appendChild(ta);
-nb.appendChild(svn);
-s4.appendChild(nb);
-
-var ab2 = document.createElement('div');
-ab2.className = 'pdb';
-ab2.innerHTML = '<div class="pdb-ti">🔄 Aktionen</div>';
-var upd = document.createElement('button');
-upd.className = 'btn btn-sm btn-blue';
-upd.textContent = '🔄 Deal updaten';
-upd.style.marginRight = '8px';
-upd.onclick = (function(cid){ return function(){ pdUpdate(cid); }; })(id);
-var act = document.createElement('button');
-act.className = 'btn btn-sm btn-green';
-act.textContent = '✅ Als erledigt';
-act.onclick = (function(cid){ return function(){ pdActivity(cid); }; })(id);
-ab2.appendChild(upd);
-ab2.appendChild(act);
-s4.appendChild(ab2);
-```
-
+nb.appendChild(saveNoteBtn);
+pdSec.appendChild(nb);
+// Update + Activity buttons
+const ab2 = document.createElement(‘div’);
+ab2.className = ‘pd-box’;
+ab2.innerHTML = ‘<div class="pd-box-title">🔄 Aktionen</div>’;
+const updBtn = document.createElement(‘button’);
+updBtn.className = ‘btn btn-sm btn-blue’;
+updBtn.textContent = ‘🔄 Deal in Pipedrive updaten’;
+updBtn.onclick = () => pdUpdateDeal(id);
+updBtn.style.marginRight = ‘8px’;
+updBtn.style.marginBottom = ‘6px’;
+const actBtn = document.createElement(‘button’);
+actBtn.className = ‘btn btn-sm btn-green’;
+actBtn.textContent = ‘✅ Als erledigt markieren’;
+actBtn.onclick = () => pdAddActivity(id);
+ab2.appendChild(updBtn);
+ab2.appendChild(actBtn);
+pdSec.appendChild(ab2);
 } else {
-var noLink = document.createElement(‘div’);
-noLink.style.cssText = ‘background:var(–bg);border-radius:8px;padding:12px;font-size:12px;color:var(–muted)’;
-noLink.innerHTML = ‘Manuell angelegt – kein Pipedrive Deal verknüpft.<br><strong style="color:var(--text)">Importiere über den Pipedrive Button.</strong>’;
-s4.appendChild(noLink);
+pdSec.innerHTML += `<div class="notes-box" style="font-size:12px;color:var(--muted);">Manuell angelegter Kunde – nicht mit Pipedrive verknüpft.<br><strong style="color:var(--text);">Importiere über den Pipedrive Button um Sync zu aktivieren.</strong></div>`;
 }
-body.appendChild(s4);
+body.appendChild(pdSec);
 
-// ERINNERUNG
-var s5 = mkSec(‘🔔 Erinnerung setzen’);
-var rw = document.createElement(‘div’);
-rw.style.cssText = ‘display:flex;gap:8px’;
-var ri = document.createElement(‘input’);
-ri.type = ‘datetime-local’;
-ri.style.cssText = ‘flex:1;background:var(–bg);border:1px solid var(–border);border-radius:7px;padding:7px 10px;font-family:Outfit,sans-serif;font-size:13px;color:var(–text);outline:none’;
-var rb = document.createElement(‘button’);
-rb.className = ‘btn btn-sm btn-primary’;
-rb.textContent = ‘Setzen’;
-rb.onclick = (function(cid,input){ return function(){ setRem(cid,input.value); }; })(id,ri);
-rw.appendChild(ri);
-rw.appendChild(rb);
-s5.appendChild(rw);
-body.appendChild(s5);
+// 5. Erinnerung
+const remSec = mkSection(‘🔔 Erinnerung’);
+const remWrap = document.createElement(‘div’);
+remWrap.style.display = ‘flex’;
+remWrap.style.gap = ‘8px’;
+const remInput = document.createElement(‘input’);
+remInput.type = ‘datetime-local’;
+remInput.id = ‘rem-input-’ + id;
+remInput.style.cssText = ‘flex:1;background:var(–bg);border:1px solid var(–border);border-radius:7px;padding:7px 10px;font-family:Outfit,sans-serif;font-size:13px;color:var(–text);outline:none;’;
+const remBtn = document.createElement(‘button’);
+remBtn.className = ‘btn btn-sm btn-primary’;
+remBtn.textContent = ‘Setzen’;
+remBtn.onclick = () => setReminder(id);
+remWrap.appendChild(remInput);
+remWrap.appendChild(remBtn);
+remSec.appendChild(remWrap);
+body.appendChild(remSec);
 
-document.getElementById(‘ov’).classList.add(‘open’);
+// Attach save/delete events
+setTimeout(() => {
+const sb = document.getElementById(‘save-btn-’ + id);
+const db = document.getElementById(‘del-btn-’ + id);
+if (sb) sb.onclick = () => saveCustomer(id);
+if (db) db.onclick = () => delCustomer(id);
+}, 30);
+
+document.getElementById(‘overlay’).classList.add(‘open’);
 document.getElementById(‘panel’).classList.add(‘open’);
 }
 
-function mkSec(title) {
-var s = document.createElement(‘div’);
-s.innerHTML = ‘<div class="sec-ti">’+title+’</div>’;
-return s;
+function mkSection(title) {
+const sec = document.createElement(‘div’);
+sec.className = ‘section’;
+sec.innerHTML = `<div class="section-title">${title}</div>`;
+return sec;
 }
 
-function closeP() {
-document.getElementById(‘ov’).classList.remove(‘open’);
+function closePanel() {
+document.getElementById(‘overlay’).classList.remove(‘open’);
 document.getElementById(‘panel’).classList.remove(‘open’);
 activeId = null;
 }
 
-function saveC(id) {
-var c = customers.filter(function(x){ return x.id===id; })[0];
-if(!c) return;
-c.name = document.getElementById(‘ef-n’).value.trim()||c.name;
-c.phone = document.getElementById(‘ef-p’).value.trim();
-c.email = document.getElementById(‘ef-e’).value.trim();
-c.wa = document.getElementById(‘ef-w’).value.trim();
-c.product = document.getElementById(‘ef-prod’).value;
+// ── CUSTOMER CRUD ────────────────────────────────────────────────
+function saveCustomer(id) {
+const c = customers.find(x => x.id === id);
+if (!c) return;
+c.name = document.getElementById(‘ef-name’).value.trim() || c.name;
+c.phone = document.getElementById(‘ef-phone’).value.trim();
+c.email = document.getElementById(‘ef-email’).value.trim();
+c.wa = document.getElementById(‘ef-wa’).value.trim();
+c.product = document.getElementById(‘ef-product’).value;
 c.prio = document.getElementById(‘ef-prio’).value;
-c.date = document.getElementById(‘ef-d’).value;
-c.offerdate = document.getElementById(‘ef-od’).value;
-c.strom = document.getElementById(‘ef-st’).value.trim();
-c.strompreis = document.getElementById(‘ef-sp’).value.trim();
+c.date = document.getElementById(‘ef-date’).value;
+c.offerdate = document.getElementById(‘ef-offerdate’).value;
+c.strom = document.getElementById(‘ef-strom’).value.trim();
+c.strompreis = document.getElementById(‘ef-strompreis’).value.trim();
 c.kwp = document.getElementById(‘ef-kwp’).value.trim();
-c.preis = document.getElementById(‘ef-pr’).value.trim();
+c.preis = document.getElementById(‘ef-preis’).value.trim();
 c.pain = document.getElementById(‘ef-pain’).value.trim();
 c.notes = document.getElementById(‘ef-notes’).value.trim();
-saveLS(); render(); openPanel(id); toast(‘✅ Gespeichert!’);
+save();
+renderBoard();
+openPanel(id);
+toast(‘✅ Gespeichert!’);
 }
 
-function delC(id) {
-var c = customers.filter(function(x){ return x.id===id; })[0];
-if(!c||!confirm(c.name+’ wirklich löschen?’)) return;
-customers = customers.filter(function(x){ return x.id!==id; });
-closeP(); saveLS(); render(); toast(‘🗑 Gelöscht’);
+function delCustomer(id) {
+const c = customers.find(x => x.id === id);
+if (!c || !confirm(c.name + ’ wirklich löschen?’)) return;
+customers = customers.filter(x => x.id !== id);
+closePanel();
+save();
+renderBoard();
+toast(‘🗑 Gelöscht’);
 }
 
 function toggleTP(id, i) {
-var c = customers.filter(function(x){ return x.id===id; })[0];
-if(!c) return;
-var idx = c.completed.indexOf(i);
-if(idx!==-1) c.completed.splice(idx,1); else c.completed.push(i);
-var next = 0;
-for(var j=0;j<=10;j++){ if(c.completed.indexOf(j)===-1){next=j;break;} if(j===10) next=11; }
-c.step = Math.min(next,10);
-saveLS(); render(); openPanel(id); toast(‘✅ ‘+TPS[i].l+’ aktualisiert’);
+const c = customers.find(x => x.id === id);
+if (!c) return;
+if (c.completed.includes(i)) c.completed = c.completed.filter(x => x !== i);
+else c.completed.push(i);
+let next = 0;
+for (let j=0; j<=10; j++) { if (!c.completed.includes(j)) { next=j; break; } if(j===10) next=11; }
+c.step = Math.min(next, 10);
+save();
+renderBoard();
+openPanel(id);
+toast(‘✅ ’ + TPS[i].label + ’ aktualisiert’);
 }
 
-function showAdd() { document.getElementById(‘addM’).classList.add(‘open’); }
-function closeAdd() { document.getElementById(‘addM’).classList.remove(‘open’); }
-
-function addC() {
-var name = document.getElementById(‘an’).value.trim();
-if(!name){ toast(‘⚠️ Bitte Namen eingeben’); return; }
+// ── ADD MODAL ────────────────────────────────────────────────────
+function openAdd() { document.getElementById(‘addModal’).classList.add(‘open’); }
+function closeAdd() { document.getElementById(‘addModal’).classList.remove(‘open’); }
+function addCustomer() {
+const name = document.getElementById(‘a-name’).value.trim();
+if (!name) { toast(‘⚠️ Bitte Namen eingeben’); return; }
 customers.push({
-id:nextId++,name:name,
-phone:document.getElementById(‘ap’).value.trim(),
-email:document.getElementById(‘ae’).value.trim(),
-wa:document.getElementById(‘aw’).value.trim(),
-product:document.getElementById(‘aprod’).value,
-prio:document.getElementById(‘aprio’).value,
-date:document.getElementById(‘ad’).value,
-offerdate:document.getElementById(‘aod’).value,
-strom:document.getElementById(‘ast’).value.trim(),
-strompreis:document.getElementById(‘asp’).value.trim(),
-kwp:document.getElementById(‘akwp’).value.trim(),
-preis:document.getElementById(‘apr’).value.trim(),
-pain:document.getElementById(‘apain’).value.trim(),
-notes:document.getElementById(‘anotes’).value.trim(),
-step:0,completed:[],pdId:null
+id:nextId++, name,
+phone:document.getElementById(‘a-phone’).value.trim(),
+email:document.getElementById(‘a-email’).value.trim(),
+wa:document.getElementById(‘a-wa’).value.trim(),
+product:document.getElementById(‘a-product’).value,
+prio:document.getElementById(‘a-prio’).value,
+date:document.getElementById(‘a-date’).value,
+offerdate:document.getElementById(‘a-offerdate’).value,
+strom:document.getElementById(‘a-strom’).value.trim(),
+strompreis:document.getElementById(‘a-strompreis’).value.trim(),
+kwp:document.getElementById(‘a-kwp’).value.trim(),
+preis:document.getElementById(‘a-preis’).value.trim(),
+pain:document.getElementById(‘a-pain’).value.trim(),
+notes:document.getElementById(‘a-notes’).value.trim(),
+step:0, completed:[], pdId:null
 });
-closeAdd(); saveLS(); render(); toast(‘🎉 ‘+name+’ angelegt!’);
-[‘an’,‘ap’,‘ae’,‘aw’,‘ad’,‘aod’,‘ast’,‘asp’,‘akwp’,‘apr’,‘apain’,‘anotes’].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=’’; });
+closeAdd();
+save();
+renderBoard();
+toast(‘🎉 ’ + name + ’ angelegt!’);
+[‘a-name’,‘a-phone’,‘a-email’,‘a-wa’,‘a-date’,‘a-offerdate’,‘a-strom’,‘a-strompreis’,‘a-kwp’,‘a-preis’,‘a-pain’,‘a-notes’].forEach(id => { const el=document.getElementById(id); if(el) el.value=’’; });
 }
 
-function doWA(id) {
-var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.wa) return;
-window.open(‘https://wa.me/’+c.wa.replace(/\D/g,’’)+’?text=’+encodeURIComponent(‘Guten Tag ‘+c.name.split(’/’)[0].trim()+’ 😊’),’_blank’);
+// ── COMMUNICATION ────────────────────────────────────────────────
+function openWA(id) {
+const c = customers.find(x => x.id === id);
+if (!c||!c.wa) return;
+const num = c.wa.replace(/\D/g,’’);
+const msg = encodeURIComponent(‘Guten Tag ’ + c.name.split(’/’)[0].trim() + ’ 😊\nIch wollte kurz nachfragen ob Sie noch Fragen haben?\nBei Fragen einfach melden!’);
+window.open(‘https://wa.me/’ + num + ‘?text=’ + msg, ‘_blank’);
 toast(‘📱 WhatsApp geöffnet’);
 }
-function doMail(id) {
-var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.email) return;
-window.open(‘mailto:’+c.email+’?subject=’+encodeURIComponent(‘Ihr Angebot – ‘+c.product),’_blank’);
+
+function openMail(id) {
+const c = customers.find(x => x.id === id);
+if (!c||!c.email) return;
+const s = encodeURIComponent(’Ihr Angebot – ’ + c.product);
+const b = encodeURIComponent(’Sehr geehrte/r ’ + c.name + ‘,\n\nvielen Dank für Ihr Interesse!\n\nIm Anhang finden Sie Ihr persönliches Angebot.\n\nMit freundlichen Grüßen’);
+window.open(‘mailto:’ + c.email + ‘?subject=’ + s + ‘&body=’ + b, ‘_blank’);
 toast(‘📧 Mail geöffnet’);
 }
+
 function doCall(id) {
-var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.phone) return;
-window.open(‘tel:’+c.phone,’_blank’); toast(‘📞 Anruf’);
+const c = customers.find(x => x.id === id);
+if (!c||!c.phone) return;
+window.open(‘tel:’ + c.phone, ‘_blank’);
+toast(‘📞 Anruf wird gestartet’);
 }
 
-function showPD() {
-document.getElementById(‘pdM’).classList.add(‘open’);
-document.getElementById(‘pds1’).style.display=‘block’;
-document.getElementById(‘pds2’).style.display=‘none’;
-var t=localStorage.getItem(‘pd_t’); if(t) document.getElementById(‘pdt’).placeholder=’••••• (gespeichert)’;
+// ── PIPEDRIVE ─────────────────────────────────────────────────────
+function openPD() {
+document.getElementById(‘pdModal’).classList.add(‘open’);
+document.getElementById(‘pd-step1’).style.display = ‘block’;
+document.getElementById(‘pd-step2’).style.display = ‘none’;
+const saved = localStorage.getItem(‘pd_token’);
+if (saved) document.getElementById(‘pd-token’).placeholder = ‘••••• (gespeichert – leer lassen)’;
 }
-function closePD() { document.getElementById(‘pdM’).classList.remove(‘open’); }
-function pdBack() { document.getElementById(‘pds1’).style.display=‘block’; document.getElementById(‘pds2’).style.display=‘none’; }
-function pdSel(v) { pdDeals.forEach(function(d){ var cb=document.getElementById(‘pdc-’+d.id); if(cb&&!cb.disabled) cb.checked=v; }); }
+function closePD() { document.getElementById(‘pdModal’).classList.remove(‘open’); }
+function pdBack() { document.getElementById(‘pd-step1’).style.display=‘block’; document.getElementById(‘pd-step2’).style.display=‘none’; }
+function pdAll(v) { pdDeals.forEach(d => { const cb=document.getElementById(‘pdc-’+d.id); if(cb&&!cb.disabled) cb.checked=v; }); }
 
-function loadDeals() {
-var inp=document.getElementById(‘pdt’).value.trim();
-var token=inp||localStorage.getItem(‘pd_t’);
-if(!token){ toast(‘⚠️ Token eingeben!’); return; }
-toast(‘⏳ Lade…’);
-fetch(PROXY+’?path=’+encodeURIComponent(‘deals?status=open&limit=100’),{headers:{‘X-PD-Token’:token}})
-.then(function(r){return r.json();})
-.then(function(d){
-if(!d.success){toast(‘❌ Token ungültig!’);return;}
-if(inp) localStorage.setItem(‘pd_t’,inp);
-pdDeals=d.data||[];
-var promises=pdDeals.map(function(deal){
-if(deal.person_id&&deal.person_id.value){
-return fetch(PROXY+’?path=’+encodeURIComponent(‘persons/’+deal.person_id.value),{headers:{‘X-PD-Token’:token}})
-.then(function(r){return r.json();})
-.then(function(pd){if(pd.success) deal._person=pd.data;})
-.catch(function(){});
+async function loadPDDeals() {
+const inp = document.getElementById(‘pd-token’).value.trim();
+const token = inp || localStorage.getItem(‘pd_token’);
+if (!token) { toast(‘⚠️ Bitte Token eingeben!’); return; }
+toast(‘⏳ Lade Deals…’);
+try {
+const r = await fetch(PROXY + ‘?path=’ + encodeURIComponent(‘deals?status=open&limit=100’), { headers:{‘X-PD-Token’:token} });
+const d = await r.json();
+if (!d.success) { toast(‘❌ Token ungültig!’); return; }
+if (inp) localStorage.setItem(‘pd_token’, inp);
+pdDeals = d.data || [];
+// Load person details
+for (const deal of pdDeals) {
+if (deal.person_id && deal.person_id.value) {
+try {
+const pr = await fetch(PROXY + ‘?path=’ + encodeURIComponent(‘persons/’+deal.person_id.value), { headers:{‘X-PD-Token’:token} });
+const pd = await pr.json();
+if (pd.success) deal._person = pd.data;
+} catch(e) {}
 }
-return Promise.resolve();
-});
-return Promise.all(promises);
-})
-.then(function(){
-var list=document.getElementById(‘pdlist’);
-list.innerHTML=’’;
-var ex=customers.map(function(c){return c.pdId;}).filter(Boolean);
-pdDeals.forEach(function(d){
-var already=ex.indexOf(d.id)!==-1;
-var phone=d._person&&d._person.phone&&d._person.phone[0]?d._person.phone[0].value:’’;
-var email=d._person&&d._person.email&&d._person.email[0]?d._person.email[0].value:’’;
-var val=d.value?parseInt(d.value).toLocaleString(‘de’)+‘€’:’—’;
-var row=document.createElement(‘div’);
-row.style.cssText=‘display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:7px;border:1px solid var(–border);background:’+(already?‘rgba(16,185,129,.05)’:‘var(–bg)’)+’;margin-bottom:4px’;
-row.innerHTML=’<input type=“checkbox” id=“pdc-’+d.id+’” ‘+(already?‘disabled checked’:‘checked’)+’ style=“width:15px;height:15px;accent-color:var(–accent);flex-shrink:0”>’
-+’<div style="flex:1"><div style="font-size:13px;font-weight:600">’+d.title+’</div>’
-+’<div style="font-size:11px;color:var(--muted)">’+(phone?‘📞 ‘+phone+’ · ‘:’’)+’ 💰 ‘+val+(already?’ <span style="color:var(--green)">✓</span>’:’’)+’</div></div>’;
+}
+renderPDList();
+document.getElementById(‘pd-step1’).style.display = ‘none’;
+document.getElementById(‘pd-step2’).style.display = ‘block’;
+const ex = customers.map(c=>c.pdId).filter(Boolean);
+const neu = pdDeals.filter(d=>!ex.includes(d.id)).length;
+document.getElementById(‘pd-found’).textContent = pdDeals.length + ’ Deals · ’ + neu + ’ neu’;
+toast(‘✅ ’ + pdDeals.length + ’ Deals geladen!’);
+} catch(e) { toast(’❌ Fehler: ’ + e.message); }
+}
+
+function renderPDList() {
+const list = document.getElementById(‘pd-list’);
+list.innerHTML = ‘’;
+const ex = customers.map(c=>c.pdId).filter(Boolean);
+pdDeals.forEach(d => {
+const already = ex.includes(d.id);
+const phone = d._person?.phone?.[0]?.value || ‘’;
+const email = d._person?.email?.[0]?.value || ‘’;
+const val = d.value ? parseInt(d.value).toLocaleString(‘de’)+‘€’ : ‘—’;
+const row = document.createElement(‘div’);
+row.style.cssText = ‘display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:7px;border:1px solid var(–border);background:’ + (already?‘rgba(16,185,129,0.05)’:‘var(–bg)’) + ‘;’;
+row.innerHTML = ` <input type="checkbox" id="pdc-${d.id}" ${already?'disabled checked':'checked'} style="width:15px;height:15px;accent-color:var(--accent);flex-shrink:0;"> <div style="flex:1;"> <div style="font-size:13px;font-weight:600;">${d.title}</div> <div style="font-size:11px;color:var(--muted);">${phone?'📞 '+phone+' · ':''}${email?'📧 '+email+' · ':''}💰 ${val}${already?' <span style="color:var(--green)">✓ importiert</span>':''}</div> </div>`;
 list.appendChild(row);
 });
-var ex2=customers.map(function(c){return c.pdId;}).filter(Boolean);
-var neu=pdDeals.filter(function(d){return ex2.indexOf(d.id)===-1;}).length;
-document.getElementById(‘pdfound’).textContent=pdDeals.length+’ Deals · ‘+neu+’ neu’;
-document.getElementById(‘pds1’).style.display=‘none’;
-document.getElementById(‘pds2’).style.display=‘block’;
-toast(‘✅ ‘+pdDeals.length+’ Deals geladen!’);
-})
-.catch(function(e){ toast(’❌ ’+e.message); });
 }
 
 function pdImport() {
-var ex=customers.map(function(c){return c.pdId;}).filter(Boolean);
-var n=0;
-pdDeals.forEach(function(d){
-var cb=document.getElementById(‘pdc-’+d.id);
-if(!cb||!cb.checked||cb.disabled||ex.indexOf(d.id)!==-1) return;
-var phone=d._person&&d._person.phone&&d._person.phone[0]?d._person.phone[0].value:’’;
-var email=d._person&&d._person.email&&d._person.email[0]?d._person.email[0].value:’’;
-var sm={1:0,2:1,3:2,4:4,5:7,6:10};
-var step=sm[d.stage_id]||0;
-customers.push({id:nextId++,pdId:d.id,name:d.title||‘Unbekannt’,phone:phone,email:email,wa:phone,product:‘PV’,prio:d.probability>=70?‘hot’:d.probability>=40?‘warm’:‘cold’,date:d.expected_close_date||’’,offerdate:’’,strom:’’,strompreis:’’,kwp:’’,preis:d.value?String(parseInt(d.value)):’’,pain:d.title||’’,notes:‘📥 Aus Pipedrive #’+d.id,step:step,completed:(function(){var a=[];for(var i=0;i<step;i++)a.push(i);return a;})()});
+const ex = customers.map(c=>c.pdId).filter(Boolean);
+let n = 0;
+pdDeals.forEach(d => {
+const cb = document.getElementById(‘pdc-’+d.id);
+if (!cb||!cb.checked||cb.disabled||ex.includes(d.id)) return;
+const phone = d._person?.phone?.[0]?.value || ‘’;
+const email = d.*person?.email?.[0]?.value || ‘’;
+const sm = {1:0,2:1,3:2,4:4,5:7,6:10};
+const step = sm[d.stage_id]||0;
+customers.push({
+id:nextId++, pdId:d.id,
+name:d.title||‘Unbekannt’, phone, email, wa:phone,
+product:‘PV’, prio:d.probability>=70?‘hot’:d.probability>=40?‘warm’:‘cold’,
+date:d.expected_close_date||’’, offerdate:’’,
+strom:’’, strompreis:’’, kwp:’’,
+preis:d.value?String(parseInt(d.value)):’’,
+pain:d.title||’’, notes:‘📥 Aus Pipedrive · Deal #’+d.id,
+step, completed:Array.from({length:step},(*,i)=>i)
+});
 n++;
 });
-if(!n){toast(‘⚠️ Keine neuen Deals’);return;}
-var ok=document.getElementById(‘pdok’);
-ok.style.display=‘block’; ok.textContent=‘✅ ‘+n+’ importiert!’;
-saveLS(); render(); toast(‘🎉 ‘+n+’ Deals importiert!’);
-setTimeout(closePD,1500);
+if (!n) { toast(‘⚠️ Keine neuen Deals!’); return; }
+const ok = document.getElementById(‘pd-ok’);
+ok.style.display = ‘block’;
+ok.textContent = ‘✅ ’ + n + ’ Deals importiert!’;
+save();
+renderBoard();
+toast(‘🎉 ’ + n + ’ Deals importiert!’);
+setTimeout(closePD, 1500);
 }
 
-function pdReq(path,method,body) {
-var token=localStorage.getItem(‘pd_t’);
-if(!token){toast(‘⚠️ Kein Token’);return Promise.resolve(null);}
-var opts={method:‘POST’,headers:{‘Content-Type’:‘application/json’,‘X-PD-Token’:token,‘X-PD-Method’:method}};
-if(body) opts.body=JSON.stringify(body);
-return fetch(PROXY+’?path=’+encodeURIComponent(path),opts).then(function(r){return r.json();}).catch(function(e){toast(’❌ ’+e.message);return null;});
+// ── PD SYNC ──────────────────────────────────────────────────────
+async function pdReq(path, method, body) {
+const token = localStorage.getItem(‘pd_token’);
+if (!token) { toast(‘⚠️ Kein Token!’); return null; }
+try {
+const opts = { method:‘POST’, headers:{‘Content-Type’:‘application/json’,‘X-PD-Token’:token,‘X-PD-Method’:method} };
+if (body) opts.body = JSON.stringify(body);
+const r = await fetch(PROXY + ‘?path=’ + encodeURIComponent(path), opts);
+return await r.json();
+} catch(e) { toast(’❌ Fehler: ’+e.message); return null; }
 }
 
-function pdNote(id,text) {
-var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.pdId) return;
-if(!text.trim()){toast(‘⚠️ Notiz eingeben’);return;}
+async function pdSaveNote(id) {
+const c = customers.find(x=>x.id===id);
+if (!c||!c.pdId) return;
+const ta = document.getElementById(‘pd-ta-’+id);
+if (!ta||!ta.value.trim()) { toast(‘⚠️ Bitte Notiz eingeben’); return; }
 toast(‘⏳ Speichere…’);
-pdReq(‘notes’,‘POST’,{content:text.trim(),deal_id:c.pdId}).then(function(r){
-if(r&&r.success) toast(‘✅ Notiz gespeichert!’); else toast(‘❌ Fehler’);
-});
+const r = await pdReq(‘notes’, ‘POST’, {content:ta.value.trim(), deal_id:c.pdId});
+if (r&&r.success) { toast(‘✅ Notiz in Pipedrive gespeichert!’); ta.value=’’; }
+else toast(‘❌ Fehler beim Speichern’);
 }
 
-function pdUpdate(id) {
-var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.pdId) return;
-toast(‘⏳ Update…’);
-var sm={0:1,1:2,2:3,3:3,4:4,5:4,6:5,7:5,8:5,9:6,10:6};
-pdReq(‘deals/’+c.pdId,‘PUT’,{stage_id:sm[c.step]||1,value:c.preis?parseInt(c.preis):undefined}).then(function(r){
-if(r&&r.success) toast(‘✅ Deal aktualisiert!’); else toast(‘❌ Fehler’);
-});
+async function pdUpdateDeal(id) {
+const c = customers.find(x=>x.id===id);
+if (!c||!c.pdId) return;
+toast(‘⏳ Aktualisiere…’);
+const sm = {0:1,1:2,2:3,3:3,4:4,5:4,6:5,7:5,8:5,9:6,10:6};
+const r = await pdReq(‘deals/’+c.pdId, ‘PUT’, {stage_id:sm[c.step]||1, value:c.preis?parseInt(c.preis):undefined, expected_close_date:c.offerdate||undefined});
+if (r&&r.success) toast(‘✅ Deal in Pipedrive aktualisiert!’);
+else toast(‘❌ Fehler beim Aktualisieren’);
 }
 
-function pdActivity(id) {
-var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.pdId) return;
+async function pdAddActivity(id) {
+const c = customers.find(x=>x.id===id);
+if (!c||!c.pdId) return;
 toast(‘⏳ Eintragen…’);
-pdReq(‘activities’,‘POST’,{subject:(TPS[c.step]?TPS[c.step].l:‘Schritt’)+’ erledigt’,deal_id:c.pdId,due_date:new Date().toISOString().split(‘T’)[0],type:‘call’,done:1}).then(function(r){
-if(r&&r.success) toast(‘✅ Aktivität eingetragen!’); else toast(‘❌ Fehler’);
-});
+const r = await pdReq(‘activities’, ‘POST’, {subject:(TPS[c.step]?.label||‘Schritt’)+’ erledigt’, deal_id:c.pdId, due_date:new Date().toISOString().split(‘T’)[0], type:‘call’, done:1});
+if (r&&r.success) toast(‘✅ Aktivität in Pipedrive eingetragen!’);
+else toast(‘❌ Fehler’);
 }
 
-function reqN() {
-if(‘Notification’ in window) Notification.requestPermission().then(function(p){ toast(p===‘granted’?‘🔔 Aktiviert!’:‘⚠️ Bitte erlauben’); });
+// ── REMINDER ─────────────────────────────────────────────────────
+function reqNotif() {
+if (‘Notification’ in window) Notification.requestPermission().then(p => toast(p===‘granted’?‘🔔 Aktiviert!’:‘⚠️ Bitte im Browser erlauben’));
 }
-
-function setRem(id,val) {
-var c=customers.filter(function(x){return x.id===id;})[0];
-if(!val){toast(‘⚠️ Datum wählen’);return;}
-var delay=new Date(val).getTime()-Date.now();
-if(delay<=0){toast(‘⚠️ Vergangenheit’);return;}
+function setReminder(id) {
+const c = customers.find(x=>x.id===id);
+const inp = document.getElementById(‘rem-input-’+id);
+if (!inp||!inp.value) { toast(‘⚠️ Bitte Datum wählen’); return; }
+const delay = new Date(inp.value).getTime() - Date.now();
+if (delay<=0) { toast(‘⚠️ Datum liegt in der Vergangenheit’); return; }
 toast(‘⏰ Erinnerung gesetzt!’);
-setTimeout(function(){
-if(‘Notification’ in window&&Notification.permission===‘granted’) new Notification(‘SolarCRM – ‘+c.name,{body:TPS[c.step]?TPS[c.step].l:’’});
-toast(’🔔 ’+c.name);
-},delay);
+setTimeout(() => {
+if (‘Notification’ in window && Notification.permission===‘granted’) new Notification(’SolarCRM – ’+c.name, {body:’Erinnerung: ’+TPS[c.step]?.label});
+toast(’🔔 ‘+c.name+’ – ’+TPS[c.step]?.label);
+}, delay);
 }
 
-function fmtD(d){ try{var p=d.split(’-’);return p[2]+’.’+p[1]+’.’+p[0].slice(2);}catch(e){return d;} }
-function esc(v){ return (v||’’).replace(/&/g,’&’).replace(/”/g,’"’).replace(/</g,’<’); }
-
+// ── HELPERS ──────────────────────────────────────────────────────
+function esc(v) { return (v||’’).replace(/”/g,’"’).replace(/</g,’<’); }
+function fmtDate(d) { try { const p=d.split(’-’); return p[2]+’.’+p[1]+’.’+p[0].slice(2); } catch(e){return d;} }
 function toast(msg) {
-var w=document.getElementById(‘toasts’);
-var t=document.createElement(‘div’);
-t.className=‘toast’; t.textContent=msg;
-w.appendChild(t); setTimeout(function(){t.remove();},4000);
+const w = document.getElementById(‘toasts’);
+const t = document.createElement(‘div’);
+t.className = ‘toast’;
+t.textContent = msg;
+w.appendChild(t);
+setTimeout(()=>t.remove(), 4000);
 }
-function saveLS() {
-try{localStorage.setItem(‘sc_c’,JSON.stringify(customers));localStorage.setItem(‘sc_id’,nextId);}catch(e){}
+function save() {
+try { localStorage.setItem(‘scrm_c’, JSON.stringify(customers)); localStorage.setItem(‘scrm_id’, nextId); } catch(e){}
 }
-function loadLS() {
-try{
-var c=localStorage.getItem(‘sc_c’); if(c) customers=JSON.parse(c);
-var n=localStorage.getItem(‘sc_id’); if(n) nextId=parseInt(n);
-}catch(e){}
+function load() {
+try {
+const c = localStorage.getItem(‘scrm_c’); if(c) customers=JSON.parse(c);
+const n = localStorage.getItem(‘scrm_id’); if(n) nextId=parseInt(n);
+} catch(e){}
 }
 
-document.getElementById(‘addM’).addEventListener(‘click’,function(e){if(e.target===e.currentTarget)closeAdd();});
-document.getElementById(‘pdM’).addEventListener(‘click’,function(e){if(e.target===e.currentTarget)closePD();});
+// Close modals on overlay click
+document.getElementById(‘addModal’).addEventListener(‘click’, e => { if(e.target===e.currentTarget) closeAdd(); });
+document.getElementById(‘pdModal’).addEventListener(‘click’, e => { if(e.target===e.currentTarget) closePD(); });
 
-loadLS();
-render();
+load();
+renderBoard();
+
+// Auto-clear old incompatible data
+if (!localStorage.getItem(‘scrm_v2’)) {
+localStorage.clear();
+localStorage.setItem(‘scrm_v2’, ‘1’);
+renderBoard();
+}
 </script>
 
 </body>
