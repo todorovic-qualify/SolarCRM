@@ -955,536 +955,573 @@ function openPanel(id) {
   tpSection.appendChild(tpList);
   body.appendChild(tpSection);
 
-  // Quick actions
-  const actSection = document.createElement('div');
-  actSection.className = 'panel-section';
-  actSection.innerHTML = `
-    <div class="section-title">⚡ Schnellaktionen</div>
-    <div class="action-group">
-      <div class="action-row">
-        <span class="action-label">WhatsApp</span>
-        <button class="btn btn-sm btn-wa" onclick="sendWA(${c.id})">📱 Öffnen</button>
-      </div>
-      <div class="action-row">
-        <span class="action-label">E-Mail</span>
-        <button class="btn btn-sm btn-blue" onclick="sendMail(${c.id})">📧 Angebot senden</button>
-      </div>
-      <div class="action-row">
-        <span class="action-label">Anruf</span>
-        <button class="btn btn-sm" style="background:rgba(100,116,139,0.1);color:var(--text);" onclick="callCustomer(${c.id})">📞 ${c.phone||'—'}</button>
-      </div>
-    </div>
-  `;
-  body.appendChild(actSection);
+  // Pipedrive Sync Section (only if deal is linked)
+  if (c.pdId) {
+    const pdSection = document.createElement('div');
+    pdSection.className = 'panel-section';
+    pdSection.innerHTML = `
+      <div class="section-title">🔗 Pipedrive Sync <span style="font-size:10px;background:rgba(234,88,12,0.1);color:#ea580c;padding:2px 7px;border-radius:20px;margin-left:6px;">Deal #${c.pdId}</span></div>
+      
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        
+        <!-- Notiz hinzufügen -->
+        <div style="background:var(--bg);border-radius:8px;padding:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">📝 Notiz hinzufügen</div>
+          <textarea id="pd-note-${c.id}" placeholder="Notiz die in Pipedrive gespeichert wird..." 
+            style="width:100%;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:Outfit,sans-serif;font-size:13px;color:var(--text);resize:vertical;min-height:70px;outline:none;margin-bottom:8px;"></textarea>
 
-  // Reminder
-  const remSection = document.createElement('div');
-  remSection.className = 'panel-section';
-  remSection.innerHTML = `
-    <div class="section-title">🔔 Erinnerung setzen</div>
-    <div class="reminder-set">
-      <input type="datetime-local" id="reminderInput">
-      <button class="btn btn-sm btn-primary" onclick="setReminder(${c.id})">Erinnerung</button>
+```
+      <button class="btn btn-sm btn-primary" onclick="addNoteToPipedrive(${c.id}, document.getElementById('pd-note-${c.id}').value)">
+        → In Pipedrive speichern
+      </button>
     </div>
-    <div style="margin-top:8px;">
-      <button class="btn btn-sm btn-danger" onclick="deleteCustomer(${c.id})">🗑 Kunde löschen</button>
-    </div>
-  `;
-  body.appendChild(remSection);
 
-  document.getElementById('panelOverlay').classList.add('open');
-  document.getElementById('panel').classList.add('open');
+    <!-- Deal Status sync -->
+    <div style="background:var(--bg);border-radius:8px;padding:12px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">🔄 Deal aktualisieren</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">Synchronisiert Touchpoint-Status, Preis und Termin mit Pipedrive.</p>
+      <button class="btn btn-sm btn-blue" onclick="updateDealInPipedrive(${c.id})">
+        🔄 Deal in Pipedrive updaten
+      </button>
+    </div>
+
+    <!-- Aktivität eintragen -->
+    <div style="background:var(--bg);border-radius:8px;padding:12px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">✅ Aktivität eintragen</div>
+      <button class="btn btn-sm btn-green" onclick="addActivityToPipedrive(${c.id}, '${TOUCHPOINTS[c.step]?.label} erledigt', '')">
+        ✅ „${TOUCHPOINTS[c.step]?.label}" als erledigt markieren
+      </button>
+    </div>
+
+  </div>
+`;
+body.appendChild(pdSection);
+```
+
+} else {
+// Not linked to Pipedrive
+const pdSection = document.createElement(‘div’);
+pdSection.className = ‘panel-section’;
+pdSection.innerHTML = `<div class="section-title">🔗 Pipedrive</div> <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);"> Dieser Kunde wurde manuell angelegt und ist nicht mit einem Pipedrive Deal verknüpft.<br> <span style="color:var(--text);font-weight:500;">Importiere den Kunden über Pipedrive um die Sync-Funktion zu nutzen.</span> </div>`;
+body.appendChild(pdSection);
+}
+
+// Quick actions
+const actSection = document.createElement(‘div’);
+actSection.className = ‘panel-section’;
+actSection.innerHTML = `<div class="section-title">⚡ Schnellaktionen</div> <div class="action-group"> <div class="action-row"> <span class="action-label">WhatsApp</span> <button class="btn btn-sm btn-wa" onclick="sendWA(${c.id})">📱 Öffnen</button> </div> <div class="action-row"> <span class="action-label">E-Mail</span> <button class="btn btn-sm btn-blue" onclick="sendMail(${c.id})">📧 Angebot senden</button> </div> <div class="action-row"> <span class="action-label">Anruf</span> <button class="btn btn-sm" style="background:rgba(100,116,139,0.1);color:var(--text);" onclick="callCustomer(${c.id})">📞 ${c.phone||'—'}</button> </div> </div>`;
+body.appendChild(actSection);
+
+// Reminder
+const remSection = document.createElement(‘div’);
+remSection.className = ‘panel-section’;
+remSection.innerHTML = `<div class="section-title">🔔 Erinnerung setzen</div> <div class="reminder-set"> <input type="datetime-local" id="reminderInput"> <button class="btn btn-sm btn-primary" onclick="setReminder(${c.id})">Erinnerung</button> </div> <div style="margin-top:8px;"> <button class="btn btn-sm btn-danger" onclick="deleteCustomer(${c.id})">🗑 Kunde löschen</button> </div>`;
+body.appendChild(remSection);
+
+document.getElementById(‘panelOverlay’).classList.add(‘open’);
+document.getElementById(‘panel’).classList.add(‘open’);
 }
 
 function closePanel() {
-  document.getElementById('panelOverlay').classList.remove('open');
-  document.getElementById('panel').classList.remove('open');
-  activeCustomer = null;
+document.getElementById(‘panelOverlay’).classList.remove(‘open’);
+document.getElementById(‘panel’).classList.remove(‘open’);
+activeCustomer = null;
 }
 
 // ── TOUCHPOINT TOGGLE ──────────────────────────────────────────────────────────
 function toggleTP(customerId, tpIndex) {
-  const c = customers.find(x => x.id === customerId);
-  if (!c) return;
+const c = customers.find(x => x.id === customerId);
+if (!c) return;
 
-  if (c.completed.includes(tpIndex)) {
-    c.completed = c.completed.filter(i => i !== tpIndex);
-  } else {
-    c.completed.push(tpIndex);
-  }
+if (c.completed.includes(tpIndex)) {
+c.completed = c.completed.filter(i => i !== tpIndex);
+} else {
+c.completed.push(tpIndex);
+}
 
-  // Advance step to next uncompleted
-  let next = 0;
-  for (let i = 0; i <= 10; i++) {
-    if (!c.completed.includes(i)) { next = i; break; }
-    if (i === 10) next = 11;
-  }
-  c.step = Math.min(next, 10);
+// Advance step to next uncompleted
+let next = 0;
+for (let i = 0; i <= 10; i++) {
+if (!c.completed.includes(i)) { next = i; break; }
+if (i === 10) next = 11;
+}
+c.step = Math.min(next, 10);
 
-  toast(`✅ ${TOUCHPOINTS[tpIndex].label} für ${c.name} aktualisiert`);
-  saveData();
-  renderBoard();
-  if (activeCustomer === customerId) openPanel(customerId);
+toast(`✅ ${TOUCHPOINTS[tpIndex].label} für ${c.name} aktualisiert`);
+saveData();
+renderBoard();
+if (activeCustomer === customerId) openPanel(customerId);
 }
 
 // ── COMMUNICATION ──────────────────────────────────────────────────────────────
 function getWAMessage(c, tpIndex) {
-  const msgs = {
-    2: `Guten Tag ${c.name.split('/')[0].trim()} 😊\nIch möchte Sie kurz an unseren Termin morgen erinnern.\nBitte halten Sie Ihre letzten Strom- und Gasabrechnungen bereit – so können wir gemeinsam die beste Lösung für Sie berechnen.\nBei Fragen einfach melden! Bis morgen 🌞`,
-    6: `Hallo ${c.name.split('/')[0].trim()} 😊\nwie versprochen sende ich Ihnen unsere Informationsunterlagen zu Ihrer persönlichen PV-Anlage.\nBei Fragen stehe ich jederzeit zur Verfügung!`,
-    default: `Guten Tag ${c.name.split('/')[0].trim()} 😊\nich hoffe, Sie sind gut. Ich wollte kurz nachfragen ob Sie noch Fragen zu unserem Angebot haben?\nIch freue mich auf Ihre Rückmeldung!`
-  };
-  return encodeURIComponent(msgs[tpIndex] || msgs.default);
+const msgs = {
+2: `Guten Tag ${c.name.split('/')[0].trim()} 😊\nIch möchte Sie kurz an unseren Termin morgen erinnern.\nBitte halten Sie Ihre letzten Strom- und Gasabrechnungen bereit – so können wir gemeinsam die beste Lösung für Sie berechnen.\nBei Fragen einfach melden! Bis morgen 🌞`,
+6: `Hallo ${c.name.split('/')[0].trim()} 😊\nwie versprochen sende ich Ihnen unsere Informationsunterlagen zu Ihrer persönlichen PV-Anlage.\nBei Fragen stehe ich jederzeit zur Verfügung!`,
+default: `Guten Tag ${c.name.split('/')[0].trim()} 😊\nich hoffe, Sie sind gut. Ich wollte kurz nachfragen ob Sie noch Fragen zu unserem Angebot haben?\nIch freue mich auf Ihre Rückmeldung!`
+};
+return encodeURIComponent(msgs[tpIndex] || msgs.default);
 }
 
 function sendWA(id) {
-  const c = customers.find(x => x.id === id);
-  if (!c || !c.wa) return;
-  const num = c.wa.replace(/\D/g,'');
-  const msg = getWAMessage(c, c.step);
-  window.open(`https://wa.me/${num}?text=${msg}`, '_blank');
-  toast(`📱 WhatsApp für ${c.name} geöffnet`);
+const c = customers.find(x => x.id === id);
+if (!c || !c.wa) return;
+const num = c.wa.replace(/\D/g,’’);
+const msg = getWAMessage(c, c.step);
+window.open(`https://wa.me/${num}?text=${msg}`, ‘_blank’);
+toast(`📱 WhatsApp für ${c.name} geöffnet`);
 }
 
 function sendWATP(id, tpIndex) {
-  const c = customers.find(x => x.id === id);
-  if (!c || !c.wa) return;
-  const num = c.wa.replace(/\D/g,'');
-  const msg = getWAMessage(c, tpIndex);
-  window.open(`https://wa.me/${num}?text=${msg}`, '_blank');
+const c = customers.find(x => x.id === id);
+if (!c || !c.wa) return;
+const num = c.wa.replace(/\D/g,’’);
+const msg = getWAMessage(c, tpIndex);
+window.open(`https://wa.me/${num}?text=${msg}`, ‘_blank’);
 }
 
 function sendMail(id) {
-  const c = customers.find(x => x.id === id);
-  if (!c || !c.email) return;
-  const subject = encodeURIComponent(`Ihr persönliches Angebot – ${c.product} Anlage`);
-  const body = encodeURIComponent(`Sehr geehrte/r ${c.name},\n\nvielen Dank für Ihr Interesse und das persönliche Gespräch.\n\nIm Anhang finden Sie Ihr individuelles Angebot für eine ${c.product}-Anlage${c.kwp ? ' mit ' + c.kwp + ' kWp' : ''}.\n\n${c.strom && c.strompreis ? 'Bei Ihrem aktuellen Verbrauch von ' + c.strom + ' kWh/Jahr und einem Strompreis von ' + c.strompreis + '€/kWh zahlen Sie aktuell ' + Math.round(parseInt(c.strom)*parseFloat(c.strompreis)) + '€/Jahr – das können wir deutlich reduzieren!\n\n' : ''}Für Rückfragen stehe ich jederzeit zur Verfügung.\n\nMit freundlichen Grüßen`);
-  window.open(`mailto:${c.email}?subject=${subject}&body=${body}`, '_blank');
-  toast(`📧 Mail für ${c.name} vorbereitet`);
+const c = customers.find(x => x.id === id);
+if (!c || !c.email) return;
+const subject = encodeURIComponent(`Ihr persönliches Angebot – ${c.product} Anlage`);
+const body = encodeURIComponent(`Sehr geehrte/r ${c.name},\n\nvielen Dank für Ihr Interesse und das persönliche Gespräch.\n\nIm Anhang finden Sie Ihr individuelles Angebot für eine ${c.product}-Anlage${c.kwp ? ' mit ' + c.kwp + ' kWp' : ''}.\n\n${c.strom && c.strompreis ? 'Bei Ihrem aktuellen Verbrauch von ' + c.strom + ' kWh/Jahr und einem Strompreis von ' + c.strompreis + '€/kWh zahlen Sie aktuell ' + Math.round(parseInt(c.strom)*parseFloat(c.strompreis)) + '€/Jahr – das können wir deutlich reduzieren!\n\n' : ''}Für Rückfragen stehe ich jederzeit zur Verfügung.\n\nMit freundlichen Grüßen`);
+window.open(`mailto:${c.email}?subject=${subject}&body=${body}`, ‘_blank’);
+toast(`📧 Mail für ${c.name} vorbereitet`);
 }
 
 function sendMailTP(id, tpIndex) {
-  sendMail(id);
+sendMail(id);
 }
 
 function callCustomer(id) {
-  const c = customers.find(x => x.id === id);
-  if (!c || !c.phone) return;
-  window.open(`tel:${c.phone}`, '_blank');
-  toast(`📞 Anruf zu ${c.name} wird gestartet`);
+const c = customers.find(x => x.id === id);
+if (!c || !c.phone) return;
+window.open(`tel:${c.phone}`, ‘_blank’);
+toast(`📞 Anruf zu ${c.name} wird gestartet`);
 }
 
 // ── ADD CUSTOMER ───────────────────────────────────────────────────────────────
-function openAddModal() { document.getElementById('addModal').classList.add('open'); }
-function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+function openAddModal() { document.getElementById(‘addModal’).classList.add(‘open’); }
+function closeAddModal() { document.getElementById(‘addModal’).classList.remove(‘open’); }
 
 function addCustomer() {
-  const name = document.getElementById('f-name').value.trim();
-  if (!name) { toast('⚠️ Bitte Namen eingeben!'); return; }
+const name = document.getElementById(‘f-name’).value.trim();
+if (!name) { toast(‘⚠️ Bitte Namen eingeben!’); return; }
 
-  const c = {
-    id: nextId++,
-    name,
-    phone: document.getElementById('f-phone').value.trim(),
-    email: document.getElementById('f-email').value.trim(),
-    wa: document.getElementById('f-wa').value.trim(),
-    product: document.getElementById('f-product').value,
-    prio: document.getElementById('f-prio').value,
-    date: document.getElementById('f-date').value,
-    offerdate: document.getElementById('f-offerdate').value,
-    strom: document.getElementById('f-strom').value.trim(),
-    strompreis: document.getElementById('f-strompreis').value.trim(),
-    gas: document.getElementById('f-gas').value.trim(),
-    gaspreis: document.getElementById('f-gaspreis').value.trim(),
-    kwp: document.getElementById('f-kwp').value.trim(),
-    preis: document.getElementById('f-preis').value.trim(),
-    pain: document.getElementById('f-pain').value.trim(),
-    notes: document.getElementById('f-notes').value.trim(),
-    step: 0,
-    completed: [],
-  };
+const c = {
+id: nextId++,
+name,
+phone: document.getElementById(‘f-phone’).value.trim(),
+email: document.getElementById(‘f-email’).value.trim(),
+wa: document.getElementById(‘f-wa’).value.trim(),
+product: document.getElementById(‘f-product’).value,
+prio: document.getElementById(‘f-prio’).value,
+date: document.getElementById(‘f-date’).value,
+offerdate: document.getElementById(‘f-offerdate’).value,
+strom: document.getElementById(‘f-strom’).value.trim(),
+strompreis: document.getElementById(‘f-strompreis’).value.trim(),
+gas: document.getElementById(‘f-gas’).value.trim(),
+gaspreis: document.getElementById(‘f-gaspreis’).value.trim(),
+kwp: document.getElementById(‘f-kwp’).value.trim(),
+preis: document.getElementById(‘f-preis’).value.trim(),
+pain: document.getElementById(‘f-pain’).value.trim(),
+notes: document.getElementById(‘f-notes’).value.trim(),
+step: 0,
+completed: [],
+};
 
-  customers.push(c);
-  closeAddModal();
-  saveData();
-  renderBoard();
-  toast(`🎉 ${name} wurde angelegt!`);
+customers.push(c);
+closeAddModal();
+saveData();
+renderBoard();
+toast(`🎉 ${name} wurde angelegt!`);
 
-  // Reset form
-  ['f-name','f-phone','f-email','f-wa','f-date','f-offerdate','f-strom','f-strompreis','f-gas','f-gaspreis','f-kwp','f-preis','f-pain','f-notes'].forEach(id => document.getElementById(id).value = '');
+// Reset form
+[‘f-name’,‘f-phone’,‘f-email’,‘f-wa’,‘f-date’,‘f-offerdate’,‘f-strom’,‘f-strompreis’,‘f-gas’,‘f-gaspreis’,‘f-kwp’,‘f-preis’,‘f-pain’,‘f-notes’].forEach(id => document.getElementById(id).value = ‘’);
 }
 
 function deleteCustomer(id) {
-  const c = customers.find(x => x.id === id);
-  if (!c) return;
-  if (!confirm(`${c.name} wirklich löschen?`)) return;
-  customers = customers.filter(x => x.id !== id);
-  closePanel();
-  saveData();
-  renderBoard();
-  toast(`🗑 ${c.name} gelöscht`);
+const c = customers.find(x => x.id === id);
+if (!c) return;
+if (!confirm(`${c.name} wirklich löschen?`)) return;
+customers = customers.filter(x => x.id !== id);
+closePanel();
+saveData();
+renderBoard();
+toast(`🗑 ${c.name} gelöscht`);
 }
 
 // ── REMINDERS ──────────────────────────────────────────────────────────────────
 function requestNotifPermission() {
-  if ('Notification' in window) {
-    Notification.requestPermission().then(p => {
-      toast(p === 'granted' ? '🔔 Erinnerungen aktiviert!' : '⚠️ Bitte Erinnerungen im Browser erlauben');
-    });
-  }
+if (‘Notification’ in window) {
+Notification.requestPermission().then(p => {
+toast(p === ‘granted’ ? ‘🔔 Erinnerungen aktiviert!’ : ‘⚠️ Bitte Erinnerungen im Browser erlauben’);
+});
+}
 }
 
 function setReminder(id) {
-  const c = customers.find(x => x.id === id);
-  if (!c) return;
-  const val = document.getElementById('reminderInput').value;
-  if (!val) { toast('⚠️ Bitte Datum/Zeit auswählen'); return; }
+const c = customers.find(x => x.id === id);
+if (!c) return;
+const val = document.getElementById(‘reminderInput’).value;
+if (!val) { toast(‘⚠️ Bitte Datum/Zeit auswählen’); return; }
 
-  const when = new Date(val).getTime();
-  const now = Date.now();
-  const delay = when - now;
+const when = new Date(val).getTime();
+const now = Date.now();
+const delay = when - now;
 
-  if (delay <= 0) { toast('⚠️ Datum liegt in der Vergangenheit'); return; }
+if (delay <= 0) { toast(‘⚠️ Datum liegt in der Vergangenheit’); return; }
 
-  toast(`⏰ Erinnerung für ${c.name} gesetzt!`);
+toast(`⏰ Erinnerung für ${c.name} gesetzt!`);
 
-  setTimeout(() => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(`SolarCRM – ${c.name}`, {
-        body: `Erinnerung: Touchpoint ${c.step+1}/11 – ${TOUCHPOINTS[c.step].label}`,
-        icon: '☀️'
-      });
-    }
-    toast(`🔔 Erinnerung: ${c.name} – ${TOUCHPOINTS[c.step]?.label}`);
-  }, delay);
+setTimeout(() => {
+if (‘Notification’ in window && Notification.permission === ‘granted’) {
+new Notification(`SolarCRM – ${c.name}`, {
+body: `Erinnerung: Touchpoint ${c.step+1}/11 – ${TOUCHPOINTS[c.step].label}`,
+icon: ‘☀️’
+});
+}
+toast(`🔔 Erinnerung: ${c.name} – ${TOUCHPOINTS[c.step]?.label}`);
+}, delay);
 }
 
 function checkReminders() {
-  // Auto-warn for hot customers without next step
-  const overdue = customers.filter(c => c.prio === 'hot' && c.step < 10 && !c.offerdate);
-  if (overdue.length > 0 && Math.random() < 0.3) {
-    // Only show occasionally to avoid spam
-  }
+// Auto-warn for hot customers without next step
+const overdue = customers.filter(c => c.prio === ‘hot’ && c.step < 10 && !c.offerdate);
+if (overdue.length > 0 && Math.random() < 0.3) {
+// Only show occasionally to avoid spam
+}
 }
 
 // ── TOAST ──────────────────────────────────────────────────────────────────────
 function toast(msg) {
-  const wrap = document.getElementById('toastWrap');
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  wrap.appendChild(t);
-  setTimeout(() => t.remove(), 4000);
+const wrap = document.getElementById(‘toastWrap’);
+const t = document.createElement(‘div’);
+t.className = ‘toast’;
+t.textContent = msg;
+wrap.appendChild(t);
+setTimeout(() => t.remove(), 4000);
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function formatDate(d) {
-  if (!d || d === '???') return d;
-  try {
-    const parts = d.split('-');
-    return `${parts[2]}.${parts[1]}.${parts[0].slice(2)}`;
-  } catch { return d; }
+if (!d || d === ‘???’) return d;
+try {
+const parts = d.split(’-’);
+return `${parts[2]}.${parts[1]}.${parts[0].slice(2)}`;
+} catch { return d; }
 }
 
 // ── PERSISTENCE ───────────────────────────────────────────────────────────────
 function saveData() {
-  try { localStorage.setItem('solarcrm_customers', JSON.stringify(customers)); localStorage.setItem('solarcrm_nextid', nextId); } catch(e){}
+try { localStorage.setItem(‘solarcrm_customers’, JSON.stringify(customers)); localStorage.setItem(‘solarcrm_nextid’, nextId); } catch(e){}
 }
 
 function loadData() {
-  try {
-    const d = localStorage.getItem('solarcrm_customers');
-    if (d) customers = JSON.parse(d);
-    const n = localStorage.getItem('solarcrm_nextid');
-    if (n) nextId = parseInt(n);
-  } catch(e){}
+try {
+const d = localStorage.getItem(‘solarcrm_customers’);
+if (d) customers = JSON.parse(d);
+const n = localStorage.getItem(‘solarcrm_nextid’);
+if (n) nextId = parseInt(n);
+} catch(e){}
 }
 
 // Close modal on overlay click
-document.getElementById('addModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAddModal(); });
+document.getElementById(‘addModal’).addEventListener(‘click’, e => { if (e.target === e.currentTarget) closeAddModal(); });
 
 // ── PIPEDRIVE SYNC (Write Back) ────────────────────────────────────────────────
 async function pdRequest(path, method, body) {
-  const token = localStorage.getItem('pd_token');
-  if (!token) { toast('⚠️ Kein Pipedrive Token gespeichert!'); return null; }
+const token = localStorage.getItem(‘pd_token’);
+if (!token) { toast(‘⚠️ Kein Pipedrive Token gespeichert!’); return null; }
 
-  try {
-    const options = {
-      method: 'POST', // Worker accepts POST, uses X-PD-Method for actual method
-      headers: {
-        'Content-Type': 'application/json',
-        'X-PD-Token': token,
-        'X-PD-Method': method,
-      },
-    };
-    if (body) options.body = JSON.stringify(body);
+try {
+const options = {
+method: ‘POST’, // Worker accepts POST, uses X-PD-Method for actual method
+headers: {
+‘Content-Type’: ‘application/json’,
+‘X-PD-Token’: token,
+‘X-PD-Method’: method,
+},
+};
+if (body) options.body = JSON.stringify(body);
 
-    const res = await fetch(`${PROXY_URL}?path=${encodeURIComponent(path)}`, options);
-    return await res.json();
-  } catch(e) {
-    toast('❌ Pipedrive Fehler: ' + e.message);
-    return null;
-  }
+```
+const res = await fetch(`${PROXY_URL}?path=${encodeURIComponent(path)}`, options);
+return await res.json();
+```
+
+} catch(e) {
+toast(’❌ Pipedrive Fehler: ’ + e.message);
+return null;
+}
 }
 
 async function addNoteToPipedrive(customerId, noteText) {
-  const c = customers.find(x => x.id === customerId);
-  if (!c || !c.pdId) { toast('⚠️ Kein Pipedrive Deal verknüpft!'); return; }
-  if (!noteText.trim()) { toast('⚠️ Bitte Notiz eingeben!'); return; }
+const c = customers.find(x => x.id === customerId);
+if (!c || !c.pdId) { toast(‘⚠️ Kein Pipedrive Deal verknüpft!’); return; }
+if (!noteText.trim()) { toast(‘⚠️ Bitte Notiz eingeben!’); return; }
 
-  toast('⏳ Notiz wird gespeichert...');
-  const result = await pdRequest('notes', 'POST', {
-    content: noteText,
-    deal_id: c.pdId,
-  });
+toast(‘⏳ Notiz wird gespeichert…’);
+const result = await pdRequest(‘notes’, ‘POST’, {
+content: noteText,
+deal_id: c.pdId,
+});
 
-  if (result && result.success) {
-    toast(`✅ Notiz in Pipedrive gespeichert!`);
-    // Also save locally
-    c.notes = (c.notes ? c.notes + '\n' : '') + `[${new Date().toLocaleDateString('de')}] ${noteText}`;
-    saveData();
-    openPanel(customerId);
-  } else {
-    toast('❌ Fehler beim Speichern in Pipedrive');
-  }
+if (result && result.success) {
+toast(`✅ Notiz in Pipedrive gespeichert!`);
+// Also save locally
+c.notes = (c.notes ? c.notes + ‘\n’ : ‘’) + `[${new Date().toLocaleDateString('de')}] ${noteText}`;
+saveData();
+openPanel(customerId);
+} else {
+toast(‘❌ Fehler beim Speichern in Pipedrive’);
+}
 }
 
 async function updateDealInPipedrive(customerId) {
-  const c = customers.find(x => x.id === customerId);
-  if (!c || !c.pdId) { toast('⚠️ Kein Pipedrive Deal verknüpft!'); return; }
+const c = customers.find(x => x.id === customerId);
+if (!c || !c.pdId) { toast(‘⚠️ Kein Pipedrive Deal verknüpft!’); return; }
 
-  toast('⏳ Deal wird aktualisiert...');
+toast(‘⏳ Deal wird aktualisiert…’);
 
-  // Map touchpoint step to Pipedrive stage
-  const stageMap = { 0:1, 1:2, 2:3, 3:3, 4:4, 5:4, 6:5, 7:5, 8:5, 9:6, 10:6 };
+// Map touchpoint step to Pipedrive stage
+const stageMap = { 0:1, 1:2, 2:3, 3:3, 4:4, 5:4, 6:5, 7:5, 8:5, 9:6, 10:6 };
 
-  const result = await pdRequest(`deals/${c.pdId}`, 'PUT', {
-    stage_id: stageMap[c.step] || 1,
-    value: c.preis ? parseInt(c.preis) : undefined,
-    expected_close_date: c.offerdate || undefined,
-  });
+const result = await pdRequest(`deals/${c.pdId}`, ‘PUT’, {
+stage_id: stageMap[c.step] || 1,
+value: c.preis ? parseInt(c.preis) : undefined,
+expected_close_date: c.offerdate || undefined,
+});
 
-  if (result && result.success) {
-    toast(`✅ Deal in Pipedrive aktualisiert!`);
-  } else {
-    toast('❌ Fehler beim Aktualisieren');
-  }
+if (result && result.success) {
+toast(`✅ Deal in Pipedrive aktualisiert!`);
+} else {
+toast(‘❌ Fehler beim Aktualisieren’);
+}
 }
 
 async function addActivityToPipedrive(customerId, subject, dueDate) {
-  const c = customers.find(x => x.id === customerId);
-  if (!c || !c.pdId) { toast('⚠️ Kein Pipedrive Deal verknüpft!'); return; }
+const c = customers.find(x => x.id === customerId);
+if (!c || !c.pdId) { toast(‘⚠️ Kein Pipedrive Deal verknüpft!’); return; }
 
-  toast('⏳ Aktivität wird erstellt...');
-  const result = await pdRequest('activities', 'POST', {
-    subject: subject || `Touchpoint ${c.step + 1}: ${TOUCHPOINTS[c.step]?.label}`,
-    deal_id: c.pdId,
-    due_date: dueDate || new Date().toISOString().split('T')[0],
-    type: 'call',
-    done: 1,
-  });
+toast(‘⏳ Aktivität wird erstellt…’);
+const result = await pdRequest(‘activities’, ‘POST’, {
+subject: subject || `Touchpoint ${c.step + 1}: ${TOUCHPOINTS[c.step]?.label}`,
+deal_id: c.pdId,
+due_date: dueDate || new Date().toISOString().split(‘T’)[0],
+type: ‘call’,
+done: 1,
+});
 
-  if (result && result.success) {
-    toast(`✅ Aktivität in Pipedrive eingetragen!`);
-  } else {
-    toast('❌ Fehler beim Erstellen der Aktivität');
-  }
+if (result && result.success) {
+toast(`✅ Aktivität in Pipedrive eingetragen!`);
+} else {
+toast(‘❌ Fehler beim Erstellen der Aktivität’);
+}
 }
 
 // ── PIPEDRIVE IMPORT ───────────────────────────────────────────────────────────
 let pdDeals = [];
 
 function openPipedriveModal() {
-  document.getElementById('pipedriveModal').classList.add('open');
-  document.getElementById('pd-step1').style.display = 'block';
-  document.getElementById('pd-step2').style.display = 'none';
-  // restore saved token hint
-  const saved = localStorage.getItem('pd_token_hint');
-  if (saved) document.getElementById('pd-token').placeholder = '••••••••••••••••••••••••• (gespeichert)';
+document.getElementById(‘pipedriveModal’).classList.add(‘open’);
+document.getElementById(‘pd-step1’).style.display = ‘block’;
+document.getElementById(‘pd-step2’).style.display = ‘none’;
+// restore saved token hint
+const saved = localStorage.getItem(‘pd_token_hint’);
+if (saved) document.getElementById(‘pd-token’).placeholder = ‘••••••••••••••••••••••••• (gespeichert)’;
 }
 
 function closePipedriveModal() {
-  document.getElementById('pipedriveModal').classList.remove('open');
+document.getElementById(‘pipedriveModal’).classList.remove(‘open’);
 }
 
-const PROXY_URL = 'https://pipedrive-proxy.ghd5cfkf55.workers.dev';
+const PROXY_URL = ‘https://pipedrive-proxy.ghd5cfkf55.workers.dev’;
 
 async function fetchPipedriveDeals() {
-  const tokenInput = document.getElementById('pd-token').value.trim();
-  const savedToken = localStorage.getItem('pd_token');
-  const token = tokenInput || savedToken;
+const tokenInput = document.getElementById(‘pd-token’).value.trim();
+const savedToken = localStorage.getItem(‘pd_token’);
+const token = tokenInput || savedToken;
 
-  if (!token) { toast('⚠️ Bitte API Token eingeben!'); return; }
+if (!token) { toast(‘⚠️ Bitte API Token eingeben!’); return; }
 
-  toast('⏳ Verbinde mit Pipedrive...');
+toast(‘⏳ Verbinde mit Pipedrive…’);
 
-  try {
-    // Fetch all open deals via Cloudflare Worker proxy
-    const res = await fetch(`${PROXY_URL}?path=deals%3Fstatus%3Dopen%26limit%3D100`, {
-      headers: { 'X-PD-Token': token }
-    });
+try {
+// Fetch all open deals via Cloudflare Worker proxy
+const res = await fetch(`${PROXY_URL}?path=deals%3Fstatus%3Dopen%26limit%3D100`, {
+headers: { ‘X-PD-Token’: token }
+});
 
-    if (!res.ok) {
-      toast('❌ Proxy Fehler! Bitte Worker prüfen.');
-      return;
-    }
+```
+if (!res.ok) {
+  toast('❌ Proxy Fehler! Bitte Worker prüfen.');
+  return;
+}
 
-    const data = await res.json();
+const data = await res.json();
 
-    if (!data.success) {
-      toast('❌ Token ungültig! Bitte Token prüfen.');
-      return;
-    }
+if (!data.success) {
+  toast('❌ Token ungültig! Bitte Token prüfen.');
+  return;
+}
 
-    // Save token locally
-    if (tokenInput) {
-      localStorage.setItem('pd_token', tokenInput);
-      localStorage.setItem('pd_token_hint', '1');
-    }
+// Save token locally
+if (tokenInput) {
+  localStorage.setItem('pd_token', tokenInput);
+  localStorage.setItem('pd_token_hint', '1');
+}
 
-    pdDeals = data.data || [];
+pdDeals = data.data || [];
 
-    // Fetch person details for each deal
-    for (let d of pdDeals) {
-      if (d.person_id && d.person_id.value) {
-        try {
-          const pRes = await fetch(`${PROXY_URL}?path=persons%2F${d.person_id.value}`, {
-            headers: { 'X-PD-Token': token }
-          });
-          const pData = await pRes.json();
-          if (pData.success && pData.data) {
-            d._person = pData.data;
-          }
-        } catch(e) {}
+// Fetch person details for each deal
+for (let d of pdDeals) {
+  if (d.person_id && d.person_id.value) {
+    try {
+      const pRes = await fetch(`${PROXY_URL}?path=persons%2F${d.person_id.value}`, {
+        headers: { 'X-PD-Token': token }
+      });
+      const pData = await pRes.json();
+      if (pData.success && pData.data) {
+        d._person = pData.data;
       }
-    }
-
-    renderPdDeals();
-    document.getElementById('pd-step1').style.display = 'none';
-    document.getElementById('pd-step2').style.display = 'block';
-
-    const existing = customers.map(c => c.pdId).filter(Boolean);
-    const newCount = pdDeals.filter(d => !existing.includes(d.id)).length;
-    document.getElementById('pd-found-text').textContent =
-      `${pdDeals.length} Deals gefunden · ${newCount} neu · ${pdDeals.length - newCount} bereits importiert`;
-
-    toast(`✅ ${pdDeals.length} Deals geladen!`);
-
-  } catch(e) {
-    toast('❌ Verbindungsfehler: ' + e.message);
-    console.error(e);
+    } catch(e) {}
   }
+}
+
+renderPdDeals();
+document.getElementById('pd-step1').style.display = 'none';
+document.getElementById('pd-step2').style.display = 'block';
+
+const existing = customers.map(c => c.pdId).filter(Boolean);
+const newCount = pdDeals.filter(d => !existing.includes(d.id)).length;
+document.getElementById('pd-found-text').textContent =
+  `${pdDeals.length} Deals gefunden · ${newCount} neu · ${pdDeals.length - newCount} bereits importiert`;
+
+toast(`✅ ${pdDeals.length} Deals geladen!`);
+```
+
+} catch(e) {
+toast(’❌ Verbindungsfehler: ’ + e.message);
+console.error(e);
+}
 }
 
 function renderPdDeals() {
-  const list = document.getElementById('pd-deal-list');
-  list.innerHTML = '';
-  const existingPdIds = customers.map(c => c.pdId).filter(Boolean);
+const list = document.getElementById(‘pd-deal-list’);
+list.innerHTML = ‘’;
+const existingPdIds = customers.map(c => c.pdId).filter(Boolean);
 
-  pdDeals.forEach(d => {
-    const alreadyIn = existingPdIds.includes(d.id);
-    const item = document.createElement('div');
-    item.style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:${alreadyIn ? 'rgba(16,185,129,0.05)' : 'var(--bg)'};`;
+pdDeals.forEach(d => {
+const alreadyIn = existingPdIds.includes(d.id);
+const item = document.createElement(‘div’);
+item.style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:${alreadyIn ? 'rgba(16,185,129,0.05)' : 'var(--bg)'};`;
 
-    const phone = d._person?.phone?.[0]?.value || '';
-    const email = d._person?.email?.[0]?.value || '';
-    const value = d.value ? parseInt(d.value).toLocaleString('de') + '€' : '—';
+```
+const phone = d._person?.phone?.[0]?.value || '';
+const email = d._person?.email?.[0]?.value || '';
+const value = d.value ? parseInt(d.value).toLocaleString('de') + '€' : '—';
 
-    item.innerHTML = `
-      <input type="checkbox" id="pd-check-${d.id}" ${alreadyIn ? 'disabled checked' : 'checked'}
-        style="width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;">
-      <div style="flex:1;">
-        <div style="font-size:13px;font-weight:600;color:var(--text);">${d.title}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px;">
-          ${phone ? '📞 ' + phone + ' · ' : ''}${email ? '📧 ' + email + ' · ' : ''}💰 ${value}
-          ${alreadyIn ? '<span style="color:var(--green);margin-left:6px;">✓ bereits importiert</span>' : ''}
-        </div>
-      </div>
-      <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(59,130,246,0.1);color:var(--blue);">${d.stage_id ? 'Stage ' + d.stage_id : '—'}</span>
-    `;
-    list.appendChild(item);
-  });
+item.innerHTML = `
+  <input type="checkbox" id="pd-check-${d.id}" ${alreadyIn ? 'disabled checked' : 'checked'}
+    style="width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;">
+  <div style="flex:1;">
+    <div style="font-size:13px;font-weight:600;color:var(--text);">${d.title}</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:2px;">
+      ${phone ? '📞 ' + phone + ' · ' : ''}${email ? '📧 ' + email + ' · ' : ''}💰 ${value}
+      ${alreadyIn ? '<span style="color:var(--green);margin-left:6px;">✓ bereits importiert</span>' : ''}
+    </div>
+  </div>
+  <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(59,130,246,0.1);color:var(--blue);">${d.stage_id ? 'Stage ' + d.stage_id : '—'}</span>
+`;
+list.appendChild(item);
+```
+
+});
 }
 
 function pdSelectAll() {
-  pdDeals.forEach(d => {
-    const cb = document.getElementById(`pd-check-${d.id}`);
-    if (cb && !cb.disabled) cb.checked = true;
-  });
+pdDeals.forEach(d => {
+const cb = document.getElementById(`pd-check-${d.id}`);
+if (cb && !cb.disabled) cb.checked = true;
+});
 }
 
 function pdSelectNone() {
-  pdDeals.forEach(d => {
-    const cb = document.getElementById(`pd-check-${d.id}`);
-    if (cb && !cb.disabled) cb.checked = false;
-  });
+pdDeals.forEach(d => {
+const cb = document.getElementById(`pd-check-${d.id}`);
+if (cb && !cb.disabled) cb.checked = false;
+});
 }
 
 function pdBack() {
-  document.getElementById('pd-step1').style.display = 'block';
-  document.getElementById('pd-step2').style.display = 'none';
+document.getElementById(‘pd-step1’).style.display = ‘block’;
+document.getElementById(‘pd-step2’).style.display = ‘none’;
 }
 
 function importSelectedDeals() {
-  const existingPdIds = customers.map(c => c.pdId).filter(Boolean);
-  let imported = 0;
+const existingPdIds = customers.map(c => c.pdId).filter(Boolean);
+let imported = 0;
 
-  pdDeals.forEach(d => {
-    const cb = document.getElementById(`pd-check-${d.id}`);
-    if (!cb || !cb.checked || cb.disabled) return;
-    if (existingPdIds.includes(d.id)) return;
+pdDeals.forEach(d => {
+const cb = document.getElementById(`pd-check-${d.id}`);
+if (!cb || !cb.checked || cb.disabled) return;
+if (existingPdIds.includes(d.id)) return;
 
-    const phone = d._person?.phone?.[0]?.value || '';
-    const email = d._person?.email?.[0]?.value || '';
-    const name = d.title || 'Unbekannt';
+```
+const phone = d._person?.phone?.[0]?.value || '';
+const email = d._person?.email?.[0]?.value || '';
+const name = d.title || 'Unbekannt';
 
-    // Map Pipedrive stage to touchpoint step (basic mapping)
-    const stageMap = { 1:0, 2:1, 3:2, 4:4, 5:7, 6:10 };
-    const step = stageMap[d.stage_id] || 0;
+// Map Pipedrive stage to touchpoint step (basic mapping)
+const stageMap = { 1:0, 2:1, 3:2, 4:4, 5:7, 6:10 };
+const step = stageMap[d.stage_id] || 0;
 
-    customers.push({
-      id: nextId++,
-      pdId: d.id,
-      name,
-      phone,
-      email,
-      wa: phone,
-      product: 'PV',
-      prio: d.probability >= 70 ? 'hot' : d.probability >= 40 ? 'warm' : 'cold',
-      date: d.expected_close_date || '',
-      offerdate: '',
-      strom: '',
-      strompreis: '',
-      gas: '',
-      gaspreis: '',
-      kwp: '',
-      preis: d.value ? String(parseInt(d.value)) : '',
-      pain: d.title || '',
-      notes: `📥 Importiert aus Pipedrive · Deal ID: ${d.id}`,
-      step,
-      completed: Array.from({length: step}, (_, i) => i),
-    });
-    imported++;
-  });
+customers.push({
+  id: nextId++,
+  pdId: d.id,
+  name,
+  phone,
+  email,
+  wa: phone,
+  product: 'PV',
+  prio: d.probability >= 70 ? 'hot' : d.probability >= 40 ? 'warm' : 'cold',
+  date: d.expected_close_date || '',
+  offerdate: '',
+  strom: '',
+  strompreis: '',
+  gas: '',
+  gaspreis: '',
+  kwp: '',
+  preis: d.value ? String(parseInt(d.value)) : '',
+  pain: d.title || '',
+  notes: `📥 Importiert aus Pipedrive · Deal ID: ${d.id}`,
+  step,
+  completed: Array.from({length: step}, (_, i) => i),
+});
+imported++;
+```
 
-  if (imported === 0) {
-    toast('⚠️ Keine neuen Deals ausgewählt!');
-    return;
-  }
+});
 
-  const bar = document.getElementById('pd-import-bar');
-  bar.style.display = 'block';
-  bar.textContent = `✅ ${imported} Deals erfolgreich importiert!`;
-
-  saveData();
-  renderBoard();
-  toast(`🎉 ${imported} Pipedrive-Deals importiert!`);
-
-  setTimeout(() => closePipedriveModal(), 1500);
+if (imported === 0) {
+toast(‘⚠️ Keine neuen Deals ausgewählt!’);
+return;
 }
 
-document.getElementById('pipedriveModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closePipedriveModal();
+const bar = document.getElementById(‘pd-import-bar’);
+bar.style.display = ‘block’;
+bar.textContent = `✅ ${imported} Deals erfolgreich importiert!`;
+
+saveData();
+renderBoard();
+toast(`🎉 ${imported} Pipedrive-Deals importiert!`);
+
+setTimeout(() => closePipedriveModal(), 1500);
+}
+
+document.getElementById(‘pipedriveModal’).addEventListener(‘click’, e => {
+if (e.target === e.currentTarget) closePipedriveModal();
 });
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -1493,8 +1530,8 @@ renderBoard();
 
 // Daily reminder check
 setInterval(() => {
-  const hot = customers.filter(c => c.prio === 'hot' && c.step < 10);
-  if (hot.length > 0) toast(`⚡ ${hot.length} heiße Kunden warten auf nächsten Schritt!`);
+const hot = customers.filter(c => c.prio === ‘hot’ && c.step < 10);
+if (hot.length > 0) toast(`⚡ ${hot.length} heiße Kunden warten auf nächsten Schritt!`);
 }, 1000 * 60 * 30); // every 30 min
 </script>
 
