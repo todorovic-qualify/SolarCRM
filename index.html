@@ -956,55 +956,50 @@ function openPanel(id) {
   body.appendChild(tpSection);
 
   // Pipedrive Sync Section (only if deal is linked)
+  const pdSection = document.createElement('div');
+  pdSection.className = 'panel-section';
   if (c.pdId) {
-    const pdSection = document.createElement('div');
-    pdSection.className = 'panel-section';
+    const currentTPLabel = (TOUCHPOINTS[c.step] ? TOUCHPOINTS[c.step].label : 'Schritt') + ' erledigt';
     pdSection.innerHTML = `
       <div class="section-title">🔗 Pipedrive Sync <span style="font-size:10px;background:rgba(234,88,12,0.1);color:#ea580c;padding:2px 7px;border-radius:20px;margin-left:6px;">Deal #${c.pdId}</span></div>
-      
       <div style="display:flex;flex-direction:column;gap:10px;">
-        
-        <!-- Notiz hinzufügen -->
         <div style="background:var(--bg);border-radius:8px;padding:12px;">
           <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">📝 Notiz hinzufügen</div>
-          <textarea id="pd-note-${c.id}" placeholder="Notiz die in Pipedrive gespeichert wird..." 
+          <textarea id="pd-note-${c.id}" placeholder="Notiz die in Pipedrive gespeichert wird..."
             style="width:100%;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:Outfit,sans-serif;font-size:13px;color:var(--text);resize:vertical;min-height:70px;outline:none;margin-bottom:8px;"></textarea>
 
 ```
-      <button class="btn btn-sm btn-primary" onclick="addNoteToPipedrive(${c.id}, document.getElementById('pd-note-${c.id}').value)">
-        → In Pipedrive speichern
-      </button>
+      <button class="btn btn-sm btn-primary" id="pd-save-btn-${c.id}">→ In Pipedrive speichern</button>
     </div>
-
-    <!-- Deal Status sync -->
     <div style="background:var(--bg);border-radius:8px;padding:12px;">
       <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">🔄 Deal aktualisieren</div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">Synchronisiert Touchpoint-Status, Preis und Termin mit Pipedrive.</p>
-      <button class="btn btn-sm btn-blue" onclick="updateDealInPipedrive(${c.id})">
-        🔄 Deal in Pipedrive updaten
-      </button>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">Synchronisiert Touchpoint-Status, Preis und Termin.</p>
+      <button class="btn btn-sm btn-blue" id="pd-update-btn-${c.id}">🔄 Deal in Pipedrive updaten</button>
     </div>
-
-    <!-- Aktivität eintragen -->
     <div style="background:var(--bg);border-radius:8px;padding:12px;">
       <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">✅ Aktivität eintragen</div>
-      <button class="btn btn-sm btn-green" onclick="addActivityToPipedrive(${c.id}, '${TOUCHPOINTS[c.step]?.label} erledigt', '')">
-        ✅ „${TOUCHPOINTS[c.step]?.label}" als erledigt markieren
-      </button>
+      <button class="btn btn-sm btn-green" id="pd-activity-btn-${c.id}">✅ Als erledigt in Pipedrive</button>
     </div>
-
   </div>
 `;
-body.appendChild(pdSection);
+// Attach event listeners after innerHTML (avoids quote/special char issues)
+setTimeout(() => {
+  const saveBtn = document.getElementById(`pd-save-btn-${c.id}`);
+  const updateBtn = document.getElementById(`pd-update-btn-${c.id}`);
+  const actBtn = document.getElementById(`pd-activity-btn-${c.id}`);
+  if (saveBtn) saveBtn.onclick = () => {
+    const note = document.getElementById(`pd-note-${c.id}`);
+    if (note) addNoteToPipedrive(c.id, note.value);
+  };
+  if (updateBtn) updateBtn.onclick = () => updateDealInPipedrive(c.id);
+  if (actBtn) actBtn.onclick = () => addActivityToPipedrive(c.id, currentTPLabel, '');
+}, 50);
 ```
 
 } else {
-// Not linked to Pipedrive
-const pdSection = document.createElement(‘div’);
-pdSection.className = ‘panel-section’;
-pdSection.innerHTML = `<div class="section-title">🔗 Pipedrive</div> <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);"> Dieser Kunde wurde manuell angelegt und ist nicht mit einem Pipedrive Deal verknüpft.<br> <span style="color:var(--text);font-weight:500;">Importiere den Kunden über Pipedrive um die Sync-Funktion zu nutzen.</span> </div>`;
-body.appendChild(pdSection);
+pdSection.innerHTML = `<div class="section-title">🔗 Pipedrive</div> <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);"> Manuell angelegter Kunde – nicht mit Pipedrive verknüpft.<br> <span style="color:var(--text);font-weight:500;">Importiere über Pipedrive um Sync zu nutzen.</span> </div>`;
 }
+body.appendChild(pdSection);
 
 // Quick actions
 const actSection = document.createElement(‘div’);
