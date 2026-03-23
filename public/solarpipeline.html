@@ -1,1 +1,1414 @@
-<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Solar Pipeline</title>\n</head>\n<body>\n    <h1>Welcome to the Solar Pipeline</h1>\n</body>\n</html>
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SolarCRM – Pipeline</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f5;
+  --white: #ffffff;
+  --surface: #ffffff;
+  --border: #e4e8ef;
+  --text: #1a1f2e;
+  --muted: #8892a4;
+  --accent: #f59e0b;
+  --accent2: #f97316;
+  --blue: #3b82f6;
+  --green: #10b981;
+  --red: #ef4444;
+  --purple: #8b5cf6;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+- { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+font-family: ‘Outfit’, sans-serif;
+background: var(–bg);
+color: var(–text);
+height: 100vh;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+}
+
+/* ── TOP NAV ── */
+.topnav {
+background: var(–text);
+padding: 0 24px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+height: 56px;
+flex-shrink: 0;
+z-index: 50;
+}
+
+.logo {
+font-size: 18px;
+font-weight: 800;
+color: #fff;
+letter-spacing: -0.3px;
+}
+.logo span { color: var(–accent); }
+
+.nav-stats {
+display: flex;
+gap: 20px;
+align-items: center;
+}
+
+.nav-stat {
+display: flex;
+align-items: center;
+gap: 6px;
+font-size: 13px;
+color: rgba(255,255,255,0.6);
+}
+.nav-stat strong { color: #fff; font-weight: 600; }
+
+.nav-actions {
+display: flex;
+gap: 8px;
+}
+
+.btn {
+padding: 8px 16px;
+border-radius: 8px;
+font-family: ‘Outfit’, sans-serif;
+font-size: 13px;
+font-weight: 500;
+cursor: pointer;
+border: none;
+transition: all 0.15s;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+.btn-primary { background: var(–accent); color: #000; }
+.btn-primary:hover { background: #e08e00; }
+.btn-ghost { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+.btn-ghost:hover { background: rgba(255,255,255,0.15); }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+.btn-green { background: var(–green); color: #fff; }
+.btn-green:hover { opacity: 0.85; }
+.btn-blue { background: var(–blue); color: #fff; }
+.btn-blue:hover { opacity: 0.85; }
+.btn-wa { background: #25d366; color: #fff; }
+.btn-wa:hover { opacity: 0.85; }
+.btn-danger { background: rgba(239,68,68,0.1); color: var(–red); border: 1px solid rgba(239,68,68,0.2); }
+.btn-danger:hover { background: var(–red); color: #fff; }
+
+/* ── SUBBAR ── */
+.subbar {
+background: var(–white);
+border-bottom: 1px solid var(–border);
+padding: 0 24px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+height: 48px;
+flex-shrink: 0;
+}
+
+.pipeline-title {
+font-size: 13px;
+font-weight: 600;
+color: var(–muted);
+text-transform: uppercase;
+letter-spacing: 0.06em;
+}
+
+.search-wrap {
+position: relative;
+}
+
+.search-wrap input {
+background: var(–bg);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 6px 12px 6px 32px;
+font-family: ‘Outfit’, sans-serif;
+font-size: 13px;
+color: var(–text);
+width: 220px;
+outline: none;
+transition: border-color 0.15s;
+}
+.search-wrap input:focus { border-color: var(–accent); }
+.search-icon {
+position: absolute;
+left: 10px;
+top: 50%;
+transform: translateY(-50%);
+color: var(–muted);
+font-size: 14px;
+}
+
+/* ── KANBAN BOARD ── */
+.board {
+flex: 1;
+overflow-x: auto;
+overflow-y: hidden;
+padding: 20px 24px;
+display: flex;
+gap: 12px;
+align-items: flex-start;
+}
+
+.col {
+flex-shrink: 0;
+width: 220px;
+display: flex;
+flex-direction: column;
+gap: 8px;
+max-height: 100%;
+}
+
+.col-header {
+background: var(–white);
+border: 1px solid var(–border);
+border-radius: 10px;
+padding: 10px 12px;
+display: flex;
+flex-direction: column;
+gap: 4px;
+flex-shrink: 0;
+}
+
+.col-title {
+font-size: 11px;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.07em;
+color: var(–muted);
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+
+.col-count {
+background: var(–bg);
+border-radius: 20px;
+padding: 1px 7px;
+font-size: 11px;
+color: var(–text);
+font-weight: 600;
+}
+
+.col-desc {
+font-size: 11px;
+color: var(–muted);
+line-height: 1.4;
+}
+
+.col-body {
+overflow-y: auto;
+display: flex;
+flex-direction: column;
+gap: 8px;
+flex: 1;
+padding-bottom: 8px;
+}
+
+/* col accent lines */
+.col:nth-child(1) .col-header { border-top: 3px solid #64748b; }
+.col:nth-child(2) .col-header { border-top: 3px solid var(–blue); }
+.col:nth-child(3) .col-header { border-top: 3px solid var(–purple); }
+.col:nth-child(4) .col-header { border-top: 3px solid #06b6d4; }
+.col:nth-child(5) .col-header { border-top: 3px solid var(–accent); }
+.col:nth-child(6) .col-header { border-top: 3px solid var(–accent2); }
+.col:nth-child(7) .col-header { border-top: 3px solid #ec4899; }
+.col:nth-child(8) .col-header { border-top: 3px solid #8b5cf6; }
+.col:nth-child(9) .col-header { border-top: 3px solid #10b981; }
+.col:nth-child(10) .col-header { border-top: 3px solid #f59e0b; }
+.col:nth-child(11) .col-header { border-top: 3px solid var(–green); }
+
+/* ── CUSTOMER CARD ── */
+.card {
+background: var(–white);
+border: 1px solid var(–border);
+border-radius: 10px;
+padding: 12px;
+cursor: pointer;
+transition: all 0.15s;
+box-shadow: var(–shadow);
+animation: cardIn 0.25s ease forwards;
+opacity: 0;
+}
+.card:hover { border-color: var(–accent); box-shadow: var(–shadow-lg); transform: translateY(-1px); }
+
+@keyframes cardIn {
+from { opacity:0; transform: translateY(6px); }
+to { opacity:1; transform: translateY(0); }
+}
+
+.card-name {
+font-size: 14px;
+font-weight: 700;
+color: var(–text);
+margin-bottom: 4px;
+}
+
+.card-meta {
+font-size: 11px;
+color: var(–muted);
+margin-bottom: 8px;
+display: flex;
+align-items: center;
+gap: 4px;
+}
+
+.card-progress {
+display: flex;
+gap: 2px;
+margin-bottom: 8px;
+}
+
+.prog-dot {
+height: 4px;
+flex: 1;
+border-radius: 2px;
+background: var(–border);
+}
+.prog-dot.done { background: var(–green); }
+.prog-dot.active { background: var(–accent); }
+
+.card-tags {
+display: flex;
+gap: 4px;
+flex-wrap: wrap;
+}
+
+.tag {
+font-size: 10px;
+padding: 2px 7px;
+border-radius: 20px;
+font-weight: 600;
+}
+.tag-pv { background: rgba(245,158,11,0.12); color: var(–accent2); }
+.tag-wp { background: rgba(59,130,246,0.12); color: var(–blue); }
+.tag-hot { background: rgba(239,68,68,0.1); color: var(–red); }
+.tag-warm { background: rgba(245,158,11,0.1); color: var(–accent); }
+.tag-cold { background: rgba(100,116,139,0.1); color: var(–muted); }
+
+.card-reminder {
+margin-top: 8px;
+padding: 5px 8px;
+background: rgba(239,68,68,0.07);
+border-radius: 6px;
+font-size: 11px;
+color: var(–red);
+display: flex;
+align-items: center;
+gap: 4px;
+}
+
+.card-actions {
+display: flex;
+gap: 4px;
+margin-top: 8px;
+}
+
+/* ── SLIDE PANEL ── */
+.panel-overlay {
+position: fixed;
+inset: 0;
+background: rgba(26,31,46,0.4);
+z-index: 200;
+display: none;
+backdrop-filter: blur(2px);
+}
+.panel-overlay.open { display: block; }
+
+.panel {
+position: fixed;
+top: 0;
+right: 0;
+width: 480px;
+height: 100vh;
+background: var(–white);
+z-index: 201;
+overflow-y: auto;
+box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+transform: translateX(100%);
+transition: transform 0.25s ease;
+}
+.panel.open { transform: translateX(0); }
+
+.panel-head {
+background: var(–text);
+padding: 20px 24px;
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 12px;
+}
+
+.panel-name {
+font-size: 20px;
+font-weight: 800;
+color: #fff;
+margin-bottom: 4px;
+}
+.panel-sub { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+.close-btn {
+background: rgba(255,255,255,0.1);
+border: none;
+border-radius: 8px;
+width: 32px;
+height: 32px;
+color: #fff;
+cursor: pointer;
+font-size: 16px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+transition: background 0.15s;
+}
+.close-btn:hover { background: rgba(255,255,255,0.2); }
+
+.panel-body { padding: 24px; }
+
+.panel-section { margin-bottom: 24px; }
+
+.section-title {
+font-size: 11px;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.07em;
+color: var(–muted);
+margin-bottom: 12px;
+padding-bottom: 8px;
+border-bottom: 1px solid var(–border);
+}
+
+/* Touchpoint list */
+.tp-list { display: flex; flex-direction: column; gap: 8px; }
+
+.tp-item {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 10px 12px;
+border-radius: 8px;
+border: 1px solid var(–border);
+background: var(–bg);
+transition: all 0.15s;
+}
+
+.tp-item.completed {
+background: rgba(16,185,129,0.05);
+border-color: rgba(16,185,129,0.2);
+}
+
+.tp-item.active-tp {
+background: rgba(245,158,11,0.07);
+border-color: rgba(245,158,11,0.3);
+}
+
+.tp-check {
+width: 22px;
+height: 22px;
+border-radius: 50%;
+border: 2px solid var(–border);
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+font-size: 11px;
+cursor: pointer;
+transition: all 0.15s;
+}
+.tp-check.done { background: var(–green); border-color: var(–green); color: #fff; }
+.tp-check.current { border-color: var(–accent); background: rgba(245,158,11,0.15); color: var(–accent); }
+
+.tp-content { flex: 1; }
+.tp-label { font-size: 13px; font-weight: 500; color: var(–text); }
+.tp-meta { font-size: 11px; color: var(–muted); margin-top: 1px; }
+
+.tp-actions { display: flex; gap: 4px; }
+
+/* Action buttons in panel */
+.action-group { display: flex; flex-direction: column; gap: 8px; }
+
+.action-row {
+display: flex;
+gap: 8px;
+align-items: center;
+}
+
+.action-label {
+font-size: 12px;
+color: var(–muted);
+width: 80px;
+flex-shrink: 0;
+}
+
+/* Info grid */
+.info-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+}
+
+.info-item {
+background: var(–bg);
+border-radius: 8px;
+padding: 10px 12px;
+}
+.info-item label { font-size: 10px; color: var(–muted); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 3px; }
+.info-item span { font-size: 14px; font-weight: 600; color: var(–text); font-family: ‘JetBrains Mono’, monospace; }
+
+.info-item.full { grid-column: 1 / -1; }
+
+/* Notes */
+.notes-box {
+background: var(–bg);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 12px;
+font-size: 13px;
+color: var(–text);
+line-height: 1.6;
+min-height: 60px;
+}
+
+/* Reminder section */
+.reminder-set {
+display: flex;
+gap: 8px;
+align-items: center;
+}
+.reminder-set input {
+flex: 1;
+background: var(–bg);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 8px 12px;
+font-family: ‘Outfit’, sans-serif;
+font-size: 13px;
+color: var(–text);
+outline: none;
+}
+.reminder-set input:focus { border-color: var(–accent); }
+
+/* ── ADD MODAL ── */
+.modal-overlay {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.5);
+z-index: 300;
+display: none;
+align-items: center;
+justify-content: center;
+backdrop-filter: blur(3px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+background: var(–white);
+border-radius: 16px;
+width: 560px;
+max-width: 95vw;
+max-height: 90vh;
+overflow-y: auto;
+box-shadow: var(–shadow-lg);
+animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+from { opacity:0; transform: scale(0.96) translateY(8px); }
+to { opacity:1; transform: scale(1) translateY(0); }
+}
+
+.modal-head {
+padding: 24px 24px 0;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+
+.modal-head h2 { font-size: 20px; font-weight: 800; }
+
+.modal-body { padding: 20px 24px 24px; }
+
+.form-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 14px;
+margin-bottom: 14px;
+}
+
+.fg { display: flex; flex-direction: column; gap: 5px; }
+.fg.full { grid-column: 1/-1; }
+.fg label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(–muted); }
+
+.fg input, .fg select, .fg textarea {
+background: var(–bg);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 9px 12px;
+font-family: ‘Outfit’, sans-serif;
+font-size: 14px;
+color: var(–text);
+outline: none;
+transition: border-color 0.15s;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(–accent); background: #fff; }
+.fg textarea { resize: vertical; min-height: 70px; }
+.fg select option { background: #fff; }
+
+.modal-actions {
+display: flex;
+gap: 10px;
+justify-content: flex-end;
+padding-top: 16px;
+border-top: 1px solid var(–border);
+}
+
+/* ── NOTIFICATION TOAST ── */
+.toast-wrap {
+position: fixed;
+bottom: 24px;
+right: 24px;
+z-index: 999;
+display: flex;
+flex-direction: column;
+gap: 8px;
+pointer-events: none;
+}
+
+.toast {
+background: var(–text);
+color: #fff;
+padding: 12px 16px;
+border-radius: 10px;
+font-size: 13px;
+box-shadow: var(–shadow-lg);
+display: flex;
+align-items: center;
+gap: 8px;
+pointer-events: all;
+animation: toastIn 0.3s ease;
+border-left: 3px solid var(–accent);
+}
+
+@keyframes toastIn {
+from { opacity:0; transform: translateX(20px); }
+to { opacity:1; transform: translateX(0); }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(–border); border-radius: 2px; }
+
+/* Step indicator on card */
+.step-badge {
+font-size: 10px;
+font-weight: 700;
+color: var(–accent);
+background: rgba(245,158,11,0.1);
+border-radius: 20px;
+padding: 2px 7px;
+font-family: ‘JetBrains Mono’, monospace;
+}
+</style>
+
+</head>
+<body>
+
+<!-- TOP NAV -->
+
+<nav class="topnav">
+  <div class="logo">Solar<span>CRM</span></div>
+  <div class="nav-stats">
+    <div class="nav-stat">🔴 <strong id="stat-risk">0</strong> Risiko</div>
+    <div class="nav-stat">🟡 <strong id="stat-active">0</strong> Aktiv</div>
+    <div class="nav-stat">🟢 <strong id="stat-won">0</strong> Abschluss</div>
+    <div class="nav-stat">💰 <strong id="stat-volume">0€</strong> Pipeline</div>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-ghost" onclick="requestNotifPermission()">🔔 Erinnerungen</button>
+    <button class="btn btn-ghost" onclick="openPipedriveModal()" style="background:rgba(255,98,0,0.15);color:#ff8040;border-color:rgba(255,98,0,0.3);">🔗 Pipedrive Import</button>
+    <button class="btn btn-primary" onclick="openAddModal()">+ Neuer Kunde</button>
+  </div>
+</nav>
+
+<!-- SUBBAR -->
+
+<div class="subbar">
+  <span class="pipeline-title">⚡ Vertriebspipeline · 11 Touchpoints</span>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Kunde suchen..." oninput="renderBoard()">
+  </div>
+</div>
+
+<!-- BOARD -->
+
+<div class="board" id="board"></div>
+
+<!-- SLIDE PANEL -->
+
+<div class="panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="panel-head">
+    <div>
+      <div class="panel-name" id="p-name">Kunde</div>
+      <div class="panel-sub" id="p-sub">PV · Aufmaß 20.03.</div>
+    </div>
+    <button class="close-btn" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-body" id="panel-body"></div>
+</div>
+
+<!-- ADD MODAL -->
+
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Neuen Kunden anlegen</h2>
+      <button class="close-btn" style="background:var(--bg);color:var(--text);" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg"><label>Name *</label><input id="f-name" placeholder="Max Mustermann"></div>
+        <div class="fg"><label>Telefon</label><input id="f-phone" placeholder="+49 151 ..."></div>
+        <div class="fg"><label>E-Mail</label><input id="f-email" placeholder="max@beispiel.de"></div>
+        <div class="fg"><label>WhatsApp</label><input id="f-wa" placeholder="+49 151 ..."></div>
+        <div class="fg"><label>Produkt</label>
+          <select id="f-product">
+            <option value="PV">☀️ Photovoltaik</option>
+            <option value="WP">🌡️ Wärmepumpe</option>
+            <option value="PV+WP">☀️🌡️ PV + Wärmepumpe</option>
+            <option value="PV+Speicher">☀️🔋 PV + Speicher</option>
+          </select>
+        </div>
+        <div class="fg"><label>Priorität</label>
+          <select id="f-prio">
+            <option value="hot">🔴 Heiß</option>
+            <option value="warm">🟡 Warm</option>
+            <option value="cold">🔵 Kalt</option>
+          </select>
+        </div>
+        <div class="fg"><label>Aufmaß-Termin</label><input id="f-date" type="date"></div>
+        <div class="fg"><label>Angebots-Termin</label><input id="f-offerdate" type="date"></div>
+        <div class="fg"><label>Stromverbrauch (kWh/Jahr)</label><input id="f-strom" placeholder="4500"></div>
+        <div class="fg"><label>Preis kWh (€)</label><input id="f-strompreis" placeholder="0.32"></div>
+        <div class="fg"><label>Gasverbrauch (kWh/Jahr)</label><input id="f-gas" placeholder="15000"></div>
+        <div class="fg"><label>Preis Gas (€/kWh)</label><input id="f-gaspreis" placeholder="0.08"></div>
+        <div class="fg"><label>Anlagengröße (kWp)</label><input id="f-kwp" placeholder="12"></div>
+        <div class="fg"><label>Angebotspreis (€)</label><input id="f-preis" placeholder="22000"></div>
+        <div class="fg full"><label>Größter Painpoint</label><input id="f-pain" placeholder="Hohe Stromkosten, möchte unabhängig sein..."></div>
+        <div class="fg full"><label>Wünsche / Notizen</label><textarea id="f-notes" placeholder="Speicher gewünscht, Finanzierung prüfen..."></textarea></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" style="background:var(--bg);color:var(--text);border:1px solid var(--border);" onclick="closeAddModal()">Abbrechen</button>
+        <button class="btn btn-primary" onclick="addCustomer()">✓ Anlegen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PIPEDRIVE MODAL -->
+
+<div class="modal-overlay" id="pipedriveModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>🔗 Pipedrive Import</h2>
+      <button class="close-btn" style="background:var(--bg);color:var(--text);" onclick="closePipedriveModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="pd-step1">
+        <p style="font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+          Gib deinen Pipedrive API Token ein. Den findest du unter:<br>
+          <strong style="color:var(--text);">Einstellungen → Persönliche Einstellungen → API</strong>
+        </p>
+        <div class="fg full" style="margin-bottom:16px;">
+          <label>Pipedrive API Token</label>
+          <input id="pd-token" type="password" placeholder="Deinen Token hier einfügen..." autocomplete="off">
+        </div>
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);margin-bottom:16px;">
+          🔒 <strong style="color:var(--text);">Sicherheitshinweis:</strong> Dein Token wird nur lokal in diesem Browser gespeichert – nie geteilt oder übertragen.
+        </div>
+        <div class="modal-actions" style="border:none;padding:0;">
+          <button class="btn btn-ghost" style="background:var(--bg);color:var(--text);border:1px solid var(--border);" onclick="closePipedriveModal()">Abbrechen</button>
+          <button class="btn btn-primary" onclick="fetchPipedriveDeals()">🔍 Deals laden</button>
+        </div>
+      </div>
+      <div id="pd-step2" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <p style="font-size:13px;font-weight:600;color:var(--text);" id="pd-found-text">0 Deals gefunden</p>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-sm" style="background:var(--bg);color:var(--text);border:1px solid var(--border);" onclick="pdSelectAll()">Alle</button>
+            <button class="btn btn-sm" style="background:var(--bg);color:var(--text);border:1px solid var(--border);" onclick="pdSelectNone()">Keine</button>
+          </div>
+        </div>
+        <div id="pd-deal-list" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:16px;"></div>
+        <div id="pd-import-bar" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green);display:none;margin-bottom:12px;"></div>
+        <div class="modal-actions" style="border:none;padding:0;">
+          <button class="btn btn-ghost" style="background:var(--bg);color:var(--text);border:1px solid var(--border);" onclick="pdBack()">← Zurück</button>
+          <button class="btn btn-primary" onclick="importSelectedDeals()">✓ Ausgewählte importieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ── TOUCHPOINTS ────────────────────────────────────────────────────────────────
+const TOUCHPOINTS = [
+  { id:'tp1', icon:'📞', label:'Telefonat', desc:'Termin vereinbaren', short:'Erstkontakt' },
+  { id:'tp2', icon:'📧', label:'Terminbestätigung', desc:'Mail mit Termindetails', short:'Bestätigung' },
+  { id:'tp3', icon:'📱', label:'Tag-vor-SMS', desc:'Erinnerung + Abrechnungen bereithalten', short:'Erinnerung' },
+  { id:'tp4', icon:'📞', label:'Anruf unterwegs', desc:'„Wo kann ich parken?"', short:'Unterwegs' },
+  { id:'tp5', icon:'🏠', label:'Aufmaß', desc:'Vor Ort – 70% zuhören', short:'Aufmaß' },
+  { id:'tp6', icon:'📋', label:'Aufmaß-Zusammenfassung', desc:'Pflichtabfragen: Strom, Gas, Painpoint', short:'Zusammenfassung' },
+  { id:'tp7', icon:'📱', label:'Info per WhatsApp', desc:'PDF / Video senden', short:'Info WA' },
+  { id:'tp8', icon:'📧', label:'Angebot per Mail', desc:'Aurora-Angebot versenden', short:'Angebot' },
+  { id:'tp9', icon:'📞', label:'Nachfass-Anruf', desc:'„Angebot erhalten? Fragen?"', short:'Nachfass' },
+  { id:'tp10', icon:'📞', label:'Vortags-Anruf', desc:'„Komme 5 Min später – letzter Kunde wollte auch kaufen!"', short:'FOMO-Anruf' },
+  { id:'tp11', icon:'🤝', label:'Angebotsbesprechung', desc:'→ ABSCHLUSS', short:'Abschluss' },
+];
+
+// ── DEMO DATA ──────────────────────────────────────────────────────────────────
+let customers = [
+  { id:1, name:'Schäffler / Lurpion', phone:'+49 151 11111111', email:'schaeffler@mail.de', wa:'+4915111111111', product:'PV+Speicher', prio:'hot', date:'2026-04-11', offerdate:'2026-04-18', strom:'5200', strompreis:'0.34', gas:'', gaspreis:'', kwp:'14', preis:'26000', pain:'Hohe Stromrechnung, möchte unabhängig werden', notes:'Speicher gewünscht, evt. Finanzierung', step:8, completed:[0,1,2,3,4,5,6,7] },
+  { id:2, name:'Budel', phone:'+49 151 22222222', email:'budel@mail.de', wa:'+4915122222222', product:'PV', prio:'warm', date:'2026-03-20', offerdate:'2026-03-27', strom:'4100', strompreis:'0.32', gas:'', gaspreis:'', kwp:'10', preis:'18500', pain:'Stromkosten reduzieren', notes:'', step:10, completed:[0,1,2,3,4,5,6,7,8,9] },
+  { id:3, name:'Kempen', phone:'+49 151 33333333', email:'kempen@mail.de', wa:'+4915133333333', product:'PV+WP', prio:'hot', date:'2026-03-24', offerdate:'2026-04-02', strom:'6800', strompreis:'0.33', gas:'18000', gaspreis:'0.09', kwp:'18', preis:'38000', pain:'Gas raus, komplett unabhängig', notes:'PV + Wärmepumpe Kombi', step:8, completed:[0,1,2,3,4,5,6,7] },
+  { id:4, name:'Dechmann', phone:'+49 151 44444444', email:'dechmann@mail.de', wa:'+4915144444444', product:'PV', prio:'warm', date:'2026-03-27', offerdate:'', strom:'3800', strompreis:'0.31', gas:'', gaspreis:'', kwp:'9', preis:'16000', pain:'Neubau, direkt mit PV', notes:'', step:5, completed:[0,1,2,3,4] },
+  { id:5, name:'Baur', phone:'+49 151 55555555', email:'baur@mail.de', wa:'+4915155555555', product:'PV+Speicher', prio:'warm', date:'', offerdate:'', strom:'4500', strompreis:'0.32', gas:'', gaspreis:'', kwp:'12', preis:'22000', pain:'Speicher für Eigenverbrauch', notes:'', step:2, completed:[0,1] },
+  { id:6, name:'Poppel', phone:'+49 151 66666666', email:'poppel@mail.de', wa:'+4915166666666', product:'PV', prio:'cold', date:'', offerdate:'', strom:'', strompreis:'', gas:'', gaspreis:'', kwp:'', preis:'', pain:'', notes:'Noch unklar', step:1, completed:[0] },
+  { id:7, name:'Richter', phone:'+49 151 77777777', email:'richter@mail.de', wa:'+4915177777777', product:'PV', prio:'hot', date:'???', offerdate:'2026-03-28', strom:'5000', strompreis:'0.33', gas:'', gaspreis:'', kwp:'13', preis:'24000', pain:'Rentner, fixe Kosten senken', notes:'Termin unklar! Nachhaken', step:9, completed:[0,1,2,3,4,5,6,7,8] },
+  { id:8, name:'Rasel', phone:'+49 151 88888888', email:'rasel@mail.de', wa:'+4915188888888', product:'PV+WP', prio:'hot', date:'???', offerdate:'2026-03-30', strom:'7000', strompreis:'0.34', gas:'20000', gaspreis:'0.09', kwp:'20', preis:'42000', pain:'Komplettlösung', notes:'Termin unklar!', step:9, completed:[0,1,2,3,4,5,6,7,8] },
+  { id:9, name:'Hauck', phone:'+49 151 99999999', email:'hauck@mail.de', wa:'+4915199999999', product:'PV', prio:'warm', date:'', offerdate:'', strom:'4200', strompreis:'0.32', gas:'', gaspreis:'', kwp:'11', preis:'20000', pain:'NB anmelden, Finanzierung klären', notes:'NB anmelden · Finanzierung klären', step:0, completed:[] },
+  { id:10, name:'Rinaldi / Ewald', phone:'+49 151 10101010', email:'rinaldi@mail.de', wa:'+4915110101010', product:'PV', prio:'cold', date:'', offerdate:'', strom:'', strompreis:'', gas:'', gaspreis:'', kwp:'', preis:'', pain:'', notes:'Erst Anfang, nichts bekannt', step:0, completed:[] },
+];
+
+let nextId = 11;
+let activeCustomer = null;
+
+// ── RENDER BOARD ───────────────────────────────────────────────────────────────
+function renderBoard() {
+  const board = document.getElementById('board');
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  board.innerHTML = '';
+
+  const filtered = customers.filter(c => c.name.toLowerCase().includes(q));
+
+  let risk=0, active=0, won=0, volume=0;
+  customers.forEach(c => {
+    if (c.step === 10) { won++; } else if (c.prio === 'hot') { risk++; } else { active++; }
+    if (c.preis) volume += parseInt(c.preis)||0;
+  });
+  document.getElementById('stat-risk').textContent = risk;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-won').textContent = won;
+  document.getElementById('stat-volume').textContent = (volume/1000).toFixed(0) + 'K€';
+
+  TOUCHPOINTS.forEach((tp, colIdx) => {
+    const col = document.createElement('div');
+    col.className = 'col';
+
+    const colCustomers = filtered.filter(c => c.step === colIdx);
+
+    col.innerHTML = `
+      <div class="col-header">
+        <div class="col-title">
+          <span>${tp.icon} ${tp.short}</span>
+          <span class="col-count">${colCustomers.length}</span>
+        </div>
+        <div class="col-desc">${tp.desc}</div>
+      </div>
+      <div class="col-body" id="col-${colIdx}"></div>
+    `;
+    board.appendChild(col);
+
+    const body = col.querySelector(`#col-${colIdx}`);
+    colCustomers.forEach((c, i) => {
+      const card = createCard(c, i);
+      body.appendChild(card);
+    });
+  });
+
+  checkReminders();
+}
+
+function createCard(c, idx) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.animationDelay = (idx * 0.05) + 's';
+
+  const prioTag = c.prio === 'hot' ? '<span class="tag tag-hot">🔴 Heiß</span>' :
+                  c.prio === 'warm' ? '<span class="tag tag-warm">🟡 Warm</span>' :
+                  '<span class="tag tag-cold">🔵 Kalt</span>';
+
+  const productTag = c.product.includes('WP') ? '<span class="tag tag-wp">WP</span>' : '';
+  const pvTag = c.product.includes('PV') ? '<span class="tag tag-pv">PV</span>' : '';
+
+  // Progress dots
+  let dots = '';
+  for (let i = 0; i < 11; i++) {
+    const cls = c.completed.includes(i) ? 'done' : (i === c.step ? 'active' : '');
+    dots += `<div class="prog-dot ${cls}"></div>`;
+  }
+
+  const reminderHtml = c.prio === 'hot' && c.step < 10 && !c.offerdate ?
+    `<div class="card-reminder">⚠️ Kein Angebotstermin!</div>` : '';
+
+  card.innerHTML = `
+    <div class="card-name">${c.name}</div>
+    <div class="card-meta">
+      <span class="step-badge">Step ${c.step+1}/11</span>
+      ${c.date && c.date !== '???' ? '📅 ' + formatDate(c.date) : c.date === '???' ? '⚠️ Datum unklar' : ''}
+    </div>
+    <div class="card-progress">${dots}</div>
+    <div class="card-tags">${prioTag}${pvTag}${productTag}</div>
+    ${reminderHtml}
+    <div class="card-actions" style="margin-top:10px;">
+      ${c.wa ? `<button class="btn btn-sm btn-wa" onclick="event.stopPropagation();sendWA(${c.id})">📱 WA</button>` : ''}
+      ${c.email ? `<button class="btn btn-sm btn-blue" onclick="event.stopPropagation();sendMail(${c.id})">📧 Mail</button>` : ''}
+      ${c.phone ? `<button class="btn btn-sm" style="background:rgba(100,116,139,0.1);color:var(--text);" onclick="event.stopPropagation();callCustomer(${c.id})">📞</button>` : ''}
+    </div>
+  `;
+
+  card.addEventListener('click', () => openPanel(c.id));
+  return card;
+}
+
+// ── PANEL ──────────────────────────────────────────────────────────────────────
+function openPanel(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  activeCustomer = id;
+
+  document.getElementById('p-name').textContent = c.name;
+  document.getElementById('p-sub').textContent = `${c.product} · Step ${c.step+1}/11`;
+
+  const body = document.getElementById('panel-body');
+  body.innerHTML = '';
+
+  // Info grid
+  const infoSection = document.createElement('div');
+  infoSection.className = 'panel-section';
+  infoSection.innerHTML = `
+    <div class="section-title">📊 Kundendaten</div>
+    <div class="info-grid">
+      ${c.strom ? `<div class="info-item"><label>Strom kWh/Jahr</label><span>${parseInt(c.strom).toLocaleString('de')}</span></div>` : ''}
+      ${c.strompreis ? `<div class="info-item"><label>Preis/kWh</label><span>${c.strompreis}€</span></div>` : ''}
+      ${c.gas ? `<div class="info-item"><label>Gas kWh/Jahr</label><span>${parseInt(c.gas).toLocaleString('de')}</span></div>` : ''}
+      ${c.gaspreis ? `<div class="info-item"><label>Preis Gas/kWh</label><span>${c.gaspreis}€</span></div>` : ''}
+      ${c.kwp ? `<div class="info-item"><label>Anlage kWp</label><span>${c.kwp} kWp</span></div>` : ''}
+      ${c.preis ? `<div class="info-item"><label>Angebotspreis</label><span>${parseInt(c.preis).toLocaleString('de')}€</span></div>` : ''}
+      ${c.strom && c.strompreis ? `<div class="info-item full"><label>⚡ Jährliche Stromkosten (ohne PV)</label><span style="color:var(--red)">${(parseInt(c.strom)*parseFloat(c.strompreis)).toFixed(0)}€/Jahr</span></div>` : ''}
+      ${c.pain ? `<div class="info-item full"><label>💊 Größter Painpoint</label><span style="font-family:Outfit;font-size:13px;font-weight:500;">${c.pain}</span></div>` : ''}
+    </div>
+    ${c.notes ? `<div class="notes-box" style="margin-top:10px;">📝 ${c.notes}</div>` : ''}
+  `;
+  body.appendChild(infoSection);
+
+  // Touchpoints
+  const tpSection = document.createElement('div');
+  tpSection.className = 'panel-section';
+  tpSection.innerHTML = `<div class="section-title">🎯 Touchpoints</div>`;
+  const tpList = document.createElement('div');
+  tpList.className = 'tp-list';
+
+  TOUCHPOINTS.forEach((tp, i) => {
+    const done = c.completed.includes(i);
+    const isCurrent = c.step === i;
+    const item = document.createElement('div');
+    item.className = `tp-item ${done ? 'completed' : ''} ${isCurrent ? 'active-tp' : ''}`;
+
+    // Get action buttons for this touchpoint
+    let actionBtns = '';
+    if (i === 1 && c.email) actionBtns = `<button class="btn btn-sm btn-blue" onclick="sendMailTP(${c.id},${i})">📧 Mail</button>`;
+    else if (i === 2 && c.wa) actionBtns = `<button class="btn btn-sm btn-wa" onclick="sendWATP(${c.id},${i})">📱 WA</button>`;
+    else if ((i === 0 || i === 3 || i === 8 || i === 9) && c.phone) actionBtns = `<button class="btn btn-sm" style="background:rgba(100,116,139,0.1);color:var(--text);" onclick="callCustomer(${c.id})">📞 Anruf</button>`;
+    else if (i === 6 && c.wa) actionBtns = `<button class="btn btn-sm btn-wa" onclick="sendWATP(${c.id},${i})">📱 WA</button>`;
+    else if (i === 7 && c.email) actionBtns = `<button class="btn btn-sm btn-blue" onclick="sendMailTP(${c.id},${i})">📧 Angebot</button>`;
+
+    item.innerHTML = `
+      <div class="tp-check ${done ? 'done' : isCurrent ? 'current' : ''}" onclick="toggleTP(${c.id},${i})">
+        ${done ? '✓' : isCurrent ? '→' : ''}
+      </div>
+      <div class="tp-content">
+        <div class="tp-label">${tp.icon} ${tp.label}</div>
+        <div class="tp-meta">${tp.desc}</div>
+      </div>
+      <div class="tp-actions">${actionBtns}</div>
+    `;
+    tpList.appendChild(item);
+  });
+  tpSection.appendChild(tpList);
+  body.appendChild(tpSection);
+
+  // Quick actions
+  const actSection = document.createElement('div');
+  actSection.className = 'panel-section';
+  actSection.innerHTML = `
+    <div class="section-title">⚡ Schnellaktionen</div>
+    <div class="action-group">
+      <div class="action-row">
+        <span class="action-label">WhatsApp</span>
+        <button class="btn btn-sm btn-wa" onclick="sendWA(${c.id})">📱 Öffnen</button>
+      </div>
+      <div class="action-row">
+        <span class="action-label">E-Mail</span>
+        <button class="btn btn-sm btn-blue" onclick="sendMail(${c.id})">📧 Angebot senden</button>
+      </div>
+      <div class="action-row">
+        <span class="action-label">Anruf</span>
+        <button class="btn btn-sm" style="background:rgba(100,116,139,0.1);color:var(--text);" onclick="callCustomer(${c.id})">📞 ${c.phone||'—'}</button>
+      </div>
+    </div>
+  `;
+  body.appendChild(actSection);
+
+  // Reminder
+  const remSection = document.createElement('div');
+  remSection.className = 'panel-section';
+  remSection.innerHTML = `
+    <div class="section-title">🔔 Erinnerung setzen</div>
+    <div class="reminder-set">
+      <input type="datetime-local" id="reminderInput">
+      <button class="btn btn-sm btn-primary" onclick="setReminder(${c.id})">Erinnerung</button>
+    </div>
+    <div style="margin-top:8px;">
+      <button class="btn btn-sm btn-danger" onclick="deleteCustomer(${c.id})">🗑 Kunde löschen</button>
+    </div>
+  `;
+  body.appendChild(remSection);
+
+  document.getElementById('panelOverlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('panelOverlay').classList.remove('open');
+  document.getElementById('panel').classList.remove('open');
+  activeCustomer = null;
+}
+
+// ── TOUCHPOINT TOGGLE ──────────────────────────────────────────────────────────
+function toggleTP(customerId, tpIndex) {
+  const c = customers.find(x => x.id === customerId);
+  if (!c) return;
+
+  if (c.completed.includes(tpIndex)) {
+    c.completed = c.completed.filter(i => i !== tpIndex);
+  } else {
+    c.completed.push(tpIndex);
+  }
+
+  // Advance step to next uncompleted
+  let next = 0;
+  for (let i = 0; i <= 10; i++) {
+    if (!c.completed.includes(i)) { next = i; break; }
+    if (i === 10) next = 11;
+  }
+  c.step = Math.min(next, 10);
+
+  toast(`✅ ${TOUCHPOINTS[tpIndex].label} für ${c.name} aktualisiert`);
+  saveData();
+  renderBoard();
+  if (activeCustomer === customerId) openPanel(customerId);
+}
+
+// ── COMMUNICATION ──────────────────────────────────────────────────────────────
+function getWAMessage(c, tpIndex) {
+  const msgs = {
+    2: `Guten Tag ${c.name.split('/')[0].trim()} 😊\nIch möchte Sie kurz an unseren Termin morgen erinnern.\nBitte halten Sie Ihre letzten Strom- und Gasabrechnungen bereit – so können wir gemeinsam die beste Lösung für Sie berechnen.\nBei Fragen einfach melden! Bis morgen 🌞`,
+    6: `Hallo ${c.name.split('/')[0].trim()} 😊\nwie versprochen sende ich Ihnen unsere Informationsunterlagen zu Ihrer persönlichen PV-Anlage.\nBei Fragen stehe ich jederzeit zur Verfügung!`,
+    default: `Guten Tag ${c.name.split('/')[0].trim()} 😊\nich hoffe, Sie sind gut. Ich wollte kurz nachfragen ob Sie noch Fragen zu unserem Angebot haben?\nIch freue mich auf Ihre Rückmeldung!`
+  };
+  return encodeURIComponent(msgs[tpIndex] || msgs.default);
+}
+
+function sendWA(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c || !c.wa) return;
+  const num = c.wa.replace(/\D/g,'');
+  const msg = getWAMessage(c, c.step);
+  window.open(`https://wa.me/${num}?text=${msg}`, '_blank');
+  toast(`📱 WhatsApp für ${c.name} geöffnet`);
+}
+
+function sendWATP(id, tpIndex) {
+  const c = customers.find(x => x.id === id);
+  if (!c || !c.wa) return;
+  const num = c.wa.replace(/\D/g,'');
+  const msg = getWAMessage(c, tpIndex);
+  window.open(`https://wa.me/${num}?text=${msg}`, '_blank');
+}
+
+function sendMail(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c || !c.email) return;
+  const subject = encodeURIComponent(`Ihr persönliches Angebot – ${c.product} Anlage`);
+  const body = encodeURIComponent(`Sehr geehrte/r ${c.name},\n\nvielen Dank für Ihr Interesse und das persönliche Gespräch.\n\nIm Anhang finden Sie Ihr individuelles Angebot für eine ${c.product}-Anlage${c.kwp ? ' mit ' + c.kwp + ' kWp' : ''}.\n\n${c.strom && c.strompreis ? 'Bei Ihrem aktuellen Verbrauch von ' + c.strom + ' kWh/Jahr und einem Strompreis von ' + c.strompreis + '€/kWh zahlen Sie aktuell ' + Math.round(parseInt(c.strom)*parseFloat(c.strompreis)) + '€/Jahr – das können wir deutlich reduzieren!\n\n' : ''}Für Rückfragen stehe ich jederzeit zur Verfügung.\n\nMit freundlichen Grüßen`);
+  window.open(`mailto:${c.email}?subject=${subject}&body=${body}`, '_blank');
+  toast(`📧 Mail für ${c.name} vorbereitet`);
+}
+
+function sendMailTP(id, tpIndex) {
+  sendMail(id);
+}
+
+function callCustomer(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c || !c.phone) return;
+  window.open(`tel:${c.phone}`, '_blank');
+  toast(`📞 Anruf zu ${c.name} wird gestartet`);
+}
+
+// ── ADD CUSTOMER ───────────────────────────────────────────────────────────────
+function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+
+function addCustomer() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { toast('⚠️ Bitte Namen eingeben!'); return; }
+
+  const c = {
+    id: nextId++,
+    name,
+    phone: document.getElementById('f-phone').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
+    wa: document.getElementById('f-wa').value.trim(),
+    product: document.getElementById('f-product').value,
+    prio: document.getElementById('f-prio').value,
+    date: document.getElementById('f-date').value,
+    offerdate: document.getElementById('f-offerdate').value,
+    strom: document.getElementById('f-strom').value.trim(),
+    strompreis: document.getElementById('f-strompreis').value.trim(),
+    gas: document.getElementById('f-gas').value.trim(),
+    gaspreis: document.getElementById('f-gaspreis').value.trim(),
+    kwp: document.getElementById('f-kwp').value.trim(),
+    preis: document.getElementById('f-preis').value.trim(),
+    pain: document.getElementById('f-pain').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    step: 0,
+    completed: [],
+  };
+
+  customers.push(c);
+  closeAddModal();
+  saveData();
+  renderBoard();
+  toast(`🎉 ${name} wurde angelegt!`);
+
+  // Reset form
+  ['f-name','f-phone','f-email','f-wa','f-date','f-offerdate','f-strom','f-strompreis','f-gas','f-gaspreis','f-kwp','f-preis','f-pain','f-notes'].forEach(id => document.getElementById(id).value = '');
+}
+
+function deleteCustomer(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`${c.name} wirklich löschen?`)) return;
+  customers = customers.filter(x => x.id !== id);
+  closePanel();
+  saveData();
+  renderBoard();
+  toast(`🗑 ${c.name} gelöscht`);
+}
+
+// ── REMINDERS ──────────────────────────────────────────────────────────────────
+function requestNotifPermission() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(p => {
+      toast(p === 'granted' ? '🔔 Erinnerungen aktiviert!' : '⚠️ Bitte Erinnerungen im Browser erlauben');
+    });
+  }
+}
+
+function setReminder(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  const val = document.getElementById('reminderInput').value;
+  if (!val) { toast('⚠️ Bitte Datum/Zeit auswählen'); return; }
+
+  const when = new Date(val).getTime();
+  const now = Date.now();
+  const delay = when - now;
+
+  if (delay <= 0) { toast('⚠️ Datum liegt in der Vergangenheit'); return; }
+
+  toast(`⏰ Erinnerung für ${c.name} gesetzt!`);
+
+  setTimeout(() => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(`SolarCRM – ${c.name}`, {
+        body: `Erinnerung: Touchpoint ${c.step+1}/11 – ${TOUCHPOINTS[c.step].label}`,
+        icon: '☀️'
+      });
+    }
+    toast(`🔔 Erinnerung: ${c.name} – ${TOUCHPOINTS[c.step]?.label}`);
+  }, delay);
+}
+
+function checkReminders() {
+  // Auto-warn for hot customers without next step
+  const overdue = customers.filter(c => c.prio === 'hot' && c.step < 10 && !c.offerdate);
+  if (overdue.length > 0 && Math.random() < 0.3) {
+    // Only show occasionally to avoid spam
+  }
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function formatDate(d) {
+  if (!d || d === '???') return d;
+  try {
+    const parts = d.split('-');
+    return `${parts[2]}.${parts[1]}.${parts[0].slice(2)}`;
+  } catch { return d; }
+}
+
+// ── PERSISTENCE ───────────────────────────────────────────────────────────────
+function saveData() {
+  try { localStorage.setItem('solarcrm_customers', JSON.stringify(customers)); localStorage.setItem('solarcrm_nextid', nextId); } catch(e){}
+}
+
+function loadData() {
+  try {
+    const d = localStorage.getItem('solarcrm_customers');
+    if (d) customers = JSON.parse(d);
+    const n = localStorage.getItem('solarcrm_nextid');
+    if (n) nextId = parseInt(n);
+  } catch(e){}
+}
+
+// Close modal on overlay click
+document.getElementById('addModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAddModal(); });
+
+// ── PIPEDRIVE IMPORT ───────────────────────────────────────────────────────────
+let pdDeals = [];
+
+function openPipedriveModal() {
+  document.getElementById('pipedriveModal').classList.add('open');
+  document.getElementById('pd-step1').style.display = 'block';
+  document.getElementById('pd-step2').style.display = 'none';
+  // restore saved token hint
+  const saved = localStorage.getItem('pd_token_hint');
+  if (saved) document.getElementById('pd-token').placeholder = '••••••••••••••••••••••••• (gespeichert)';
+}
+
+function closePipedriveModal() {
+  document.getElementById('pipedriveModal').classList.remove('open');
+}
+
+const PROXY_URL = 'https://pipedrive-proxy.ghd5cfkf55.workers.dev';
+
+async function fetchPipedriveDeals() {
+  const tokenInput = document.getElementById('pd-token').value.trim();
+  const savedToken = localStorage.getItem('pd_token');
+  const token = tokenInput || savedToken;
+
+  if (!token) { toast('⚠️ Bitte API Token eingeben!'); return; }
+
+  toast('⏳ Verbinde mit Pipedrive...');
+
+  try {
+    // Fetch all open deals via Cloudflare Worker proxy
+    const res = await fetch(`${PROXY_URL}?path=deals%3Fstatus%3Dopen%26limit%3D100`, {
+      headers: { 'X-PD-Token': token }
+    });
+
+    if (!res.ok) {
+      toast('❌ Proxy Fehler! Bitte Worker prüfen.');
+      return;
+    }
+
+    const data = await res.json();
+
+    if (!data.success) {
+      toast('❌ Token ungültig! Bitte Token prüfen.');
+      return;
+    }
+
+    // Save token locally
+    if (tokenInput) {
+      localStorage.setItem('pd_token', tokenInput);
+      localStorage.setItem('pd_token_hint', '1');
+    }
+
+    pdDeals = data.data || [];
+
+    // Fetch person details for each deal
+    for (let d of pdDeals) {
+      if (d.person_id && d.person_id.value) {
+        try {
+          const pRes = await fetch(`${PROXY_URL}?path=persons%2F${d.person_id.value}`, {
+            headers: { 'X-PD-Token': token }
+          });
+          const pData = await pRes.json();
+          if (pData.success && pData.data) {
+            d._person = pData.data;
+          }
+        } catch(e) {}
+      }
+    }
+
+    renderPdDeals();
+    document.getElementById('pd-step1').style.display = 'none';
+    document.getElementById('pd-step2').style.display = 'block';
+
+    const existing = customers.map(c => c.pdId).filter(Boolean);
+    const newCount = pdDeals.filter(d => !existing.includes(d.id)).length;
+    document.getElementById('pd-found-text').textContent =
+      `${pdDeals.length} Deals gefunden · ${newCount} neu · ${pdDeals.length - newCount} bereits importiert`;
+
+    toast(`✅ ${pdDeals.length} Deals geladen!`);
+
+  } catch(e) {
+    toast('❌ Verbindungsfehler: ' + e.message);
+    console.error(e);
+  }
+}
+
+function renderPdDeals() {
+  const list = document.getElementById('pd-deal-list');
+  list.innerHTML = '';
+  const existingPdIds = customers.map(c => c.pdId).filter(Boolean);
+
+  pdDeals.forEach(d => {
+    const alreadyIn = existingPdIds.includes(d.id);
+    const item = document.createElement('div');
+    item.style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:${alreadyIn ? 'rgba(16,185,129,0.05)' : 'var(--bg)'};`;
+
+    const phone = d._person?.phone?.[0]?.value || '';
+    const email = d._person?.email?.[0]?.value || '';
+    const value = d.value ? parseInt(d.value).toLocaleString('de') + '€' : '—';
+
+    item.innerHTML = `
+      <input type="checkbox" id="pd-check-${d.id}" ${alreadyIn ? 'disabled checked' : 'checked'}
+        style="width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;">
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);">${d.title}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">
+          ${phone ? '📞 ' + phone + ' · ' : ''}${email ? '📧 ' + email + ' · ' : ''}💰 ${value}
+          ${alreadyIn ? '<span style="color:var(--green);margin-left:6px;">✓ bereits importiert</span>' : ''}
+        </div>
+      </div>
+      <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(59,130,246,0.1);color:var(--blue);">${d.stage_id ? 'Stage ' + d.stage_id : '—'}</span>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function pdSelectAll() {
+  pdDeals.forEach(d => {
+    const cb = document.getElementById(`pd-check-${d.id}`);
+    if (cb && !cb.disabled) cb.checked = true;
+  });
+}
+
+function pdSelectNone() {
+  pdDeals.forEach(d => {
+    const cb = document.getElementById(`pd-check-${d.id}`);
+    if (cb && !cb.disabled) cb.checked = false;
+  });
+}
+
+function pdBack() {
+  document.getElementById('pd-step1').style.display = 'block';
+  document.getElementById('pd-step2').style.display = 'none';
+}
+
+function importSelectedDeals() {
+  const existingPdIds = customers.map(c => c.pdId).filter(Boolean);
+  let imported = 0;
+
+  pdDeals.forEach(d => {
+    const cb = document.getElementById(`pd-check-${d.id}`);
+    if (!cb || !cb.checked || cb.disabled) return;
+    if (existingPdIds.includes(d.id)) return;
+
+    const phone = d._person?.phone?.[0]?.value || '';
+    const email = d._person?.email?.[0]?.value || '';
+    const name = d.title || 'Unbekannt';
+
+    // Map Pipedrive stage to touchpoint step (basic mapping)
+    const stageMap = { 1:0, 2:1, 3:2, 4:4, 5:7, 6:10 };
+    const step = stageMap[d.stage_id] || 0;
+
+    customers.push({
+      id: nextId++,
+      pdId: d.id,
+      name,
+      phone,
+      email,
+      wa: phone,
+      product: 'PV',
+      prio: d.probability >= 70 ? 'hot' : d.probability >= 40 ? 'warm' : 'cold',
+      date: d.expected_close_date || '',
+      offerdate: '',
+      strom: '',
+      strompreis: '',
+      gas: '',
+      gaspreis: '',
+      kwp: '',
+      preis: d.value ? String(parseInt(d.value)) : '',
+      pain: d.title || '',
+      notes: `📥 Importiert aus Pipedrive · Deal ID: ${d.id}`,
+      step,
+      completed: Array.from({length: step}, (_, i) => i),
+    });
+    imported++;
+  });
+
+  if (imported === 0) {
+    toast('⚠️ Keine neuen Deals ausgewählt!');
+    return;
+  }
+
+  const bar = document.getElementById('pd-import-bar');
+  bar.style.display = 'block';
+  bar.textContent = `✅ ${imported} Deals erfolgreich importiert!`;
+
+  saveData();
+  renderBoard();
+  toast(`🎉 ${imported} Pipedrive-Deals importiert!`);
+
+  setTimeout(() => closePipedriveModal(), 1500);
+}
+
+document.getElementById('pipedriveModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closePipedriveModal();
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadData();
+renderBoard();
+
+// Daily reminder check
+setInterval(() => {
+  const hot = customers.filter(c => c.prio === 'hot' && c.step < 10);
+  if (hot.length > 0) toast(`⚡ ${hot.length} heiße Kunden warten auf nächsten Schritt!`);
+}, 1000 * 60 * 30); // every 30 min
+</script>
+
+</body>
+</html>
