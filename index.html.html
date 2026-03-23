@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SolarCRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0f2f5;--white:#fff;--border:#e4e8ef;--text:#1a1f2e;--muted:#8892a4;--accent:#f59e0b;--blue:#3b82f6;--green:#10b981;--red:#ef4444;--orange:#f97316;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.04);--shadow-lg:0 8px 32px rgba(0,0,0,.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.topnav{background:var(--text);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:54px;flex-shrink:0}
+.logo{font-size:18px;font-weight:800;color:#fff}.logo span{color:var(--accent)}
+.nav-stats{display:flex;gap:16px}
+.ns{font-size:12px;color:rgba(255,255,255,.6)}.ns strong{color:#fff}
+.nav-btns{display:flex;gap:8px}
+.btn{padding:7px 14px;border-radius:7px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--accent);color:#000}.btn-primary:hover{opacity:.85}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15)}.btn-ghost:hover{background:rgba(255,255,255,.15)}
+.btn-pd{background:rgba(255,140,50,.15);color:#ff8040;border:1px solid rgba(255,140,50,.3)}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}
+.btn-blue{background:var(--blue);color:#fff}.btn-green{background:var(--green);color:#fff}
+.btn-wa{background:#25d366;color:#fff}.btn-muted{background:rgba(100,116,139,.1);color:var(--text)}
+.btn-red{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.subbar{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:46px;flex-shrink:0}
+.sub-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.search-wrap{position:relative}
+.search-wrap input{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:6px 10px 6px 30px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);width:200px;outline:none}
+.search-wrap input:focus{border-color:var(--accent)}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
+.board{flex:1;overflow-x:auto;overflow-y:hidden;padding:16px 20px;display:flex;gap:10px;align-items:flex-start}
+.col{flex-shrink:0;width:210px;display:flex;flex-direction:column;gap:8px;max-height:100%}
+.col-hd{background:#fff;border:1px solid var(--border);border-radius:9px;padding:9px 11px;flex-shrink:0}
+.col-ti{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
+.col-cnt{background:var(--bg);border-radius:20px;padding:1px 6px;font-size:10px;color:var(--text);font-weight:600}
+.col-de{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3}
+.col-bd{overflow-y:auto;display:flex;flex-direction:column;gap:7px;flex:1;padding-bottom:8px}
+.col:nth-child(1) .col-hd{border-top:3px solid #64748b}
+.col:nth-child(2) .col-hd{border-top:3px solid var(--blue)}
+.col:nth-child(3) .col-hd{border-top:3px solid #8b5cf6}
+.col:nth-child(4) .col-hd{border-top:3px solid #06b6d4}
+.col:nth-child(5) .col-hd{border-top:3px solid var(--accent)}
+.col:nth-child(6) .col-hd{border-top:3px solid var(--orange)}
+.col:nth-child(7) .col-hd{border-top:3px solid #ec4899}
+.col:nth-child(8) .col-hd{border-top:3px solid #8b5cf6}
+.col:nth-child(9) .col-hd{border-top:3px solid var(--green)}
+.col:nth-child(10) .col-hd{border-top:3px solid var(--accent)}
+.col:nth-child(11) .col-hd{border-top:3px solid var(--green)}
+.card{background:#fff;border:1px solid var(--border);border-radius:9px;padding:11px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow)}
+.card:hover{border-color:var(--accent);box-shadow:var(--shadow-lg);transform:translateY(-1px)}
+.card-name{font-size:13px;font-weight:700;margin-bottom:3px}
+.card-meta{font-size:11px;color:var(--muted);margin-bottom:7px}
+.progress{display:flex;gap:2px;margin-bottom:7px}
+.dot{height:3px;flex:1;border-radius:2px;background:var(--border)}
+.dot.done{background:var(--green)}.dot.cur{background:var(--accent)}
+.tags{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:7px}
+.tag{font-size:10px;padding:2px 6px;border-radius:20px;font-weight:600}
+.tag-hot{background:rgba(239,68,68,.1);color:var(--red)}
+.tag-warm{background:rgba(245,158,11,.1);color:var(--accent)}
+.tag-cold{background:rgba(100,116,139,.1);color:var(--muted)}
+.tag-pd{background:rgba(255,140,50,.1);color:#ff8040}
+.card-warn{margin-top:6px;padding:4px 8px;background:rgba(239,68,68,.07);border-radius:5px;font-size:11px;color:var(--red)}
+.card-btns{display:flex;gap:4px;margin-top:8px}
+.overlay{position:fixed;inset:0;background:rgba(26,31,46,.4);z-index:200;display:none;backdrop-filter:blur(2px)}
+.overlay.open{display:block}
+.panel{position:fixed;top:0;right:0;width:460px;max-width:100vw;height:100vh;background:#fff;z-index:201;overflow-y:auto;box-shadow:-8px 0 32px rgba(0,0,0,.12);transform:translateX(100%);transition:transform .25s ease}
+.panel.open{transform:translateX(0)}
+.panel-hd{background:var(--text);padding:18px 20px;display:flex;align-items:flex-start;justify-content:space-between}
+.panel-ti{font-size:19px;font-weight:800;color:#fff}
+.panel-su{font-size:12px;color:rgba(255,255,255,.5);margin-top:3px}
+.xbtn{background:rgba(255,255,255,.1);border:none;border-radius:7px;width:30px;height:30px;color:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.xbtn:hover{background:rgba(255,255,255,.2)}
+.panel-body{padding:20px;display:flex;flex-direction:column;gap:18px}
+.sec-ti{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ii{background:var(--bg);border-radius:7px;padding:9px 11px}
+.ii label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:2px}
+.ii span{font-size:13px;font-weight:600}
+.ii.full{grid-column:1/-1}
+.egrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.fg input,.fg select,.fg textarea{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);outline:none;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);background:#fff}
+.fg textarea{resize:vertical;min-height:60px}
+.tplist{display:flex;flex-direction:column;gap:6px}
+.tpi{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:7px;border:1px solid var(--border);background:var(--bg)}
+.tpi.tp-done{background:rgba(16,185,129,.05);border-color:rgba(16,185,129,.2)}
+.tpi.tp-cur{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.3)}
+.tpck{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;cursor:pointer;transition:all .15s}
+.tpck.ck-done{background:var(--green);border-color:var(--green);color:#fff}
+.tpck.ck-cur{border-color:var(--accent);background:rgba(245,158,11,.15);color:var(--accent);font-weight:700}
+.pdb{background:var(--bg);border-radius:8px;padding:12px;margin-bottom:8px}
+.pdb-ti{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px}
+.pd-ta{width:100%;background:#fff;border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);resize:vertical;min-height:65px;outline:none;display:block;margin-bottom:8px}
+.pd-ta:focus{border-color:var(--accent)}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.modal-ov.open{display:flex}
+.modal{background:#fff;border-radius:14px;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-hd{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between}
+.modal-hd h2{font-size:18px;font-weight:800}
+.modal-body{padding:18px 20px 20px}
+.modal-act{display:flex;gap:8px;justify-content:flex-end;padding-top:14px;border-top:1px solid var(--border);margin-top:14px}
+.toasts{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--text);color:#fff;padding:10px 14px;border-radius:9px;font-size:13px;box-shadow:var(--shadow-lg);border-left:3px solid var(--accent);animation:tIn .3s ease}
+@keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo">Solar<span>CRM</span></div>
+  <div class="nav-stats">
+    <div class="ns">🔴 <strong id="sr">0</strong> Risiko</div>
+    <div class="ns">🟡 <strong id="sa">0</strong> Aktiv</div>
+    <div class="ns">🟢 <strong id="sw">0</strong> Abschluss</div>
+    <div class="ns">💰 <strong id="sv">0€</strong></div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="reqN()">🔔</button>
+    <button class="btn btn-pd" onclick="showPD()">🔗 Pipedrive</button>
+    <button class="btn btn-primary" onclick="showAdd()">+ Neuer Kunde</button>
+  </div>
+</nav>
+
+<div class="subbar">
+  <span class="sub-title">⚡ Pipeline · 11 Touchpoints</span>
+  <div class="search-wrap">
+    <span class="si">🔍</span>
+    <input type="text" id="q" placeholder="Kunde suchen..." oninput="render()">
+  </div>
+</div>
+
+<div class="board" id="board"></div>
+
+<div class="overlay" id="ov" onclick="closeP()"></div>
+<div class="panel" id="panel">
+  <div class="panel-hd">
+    <div>
+      <div class="panel-ti" id="pti">–</div>
+      <div class="panel-su" id="psu">–</div>
+    </div>
+    <button class="xbtn" onclick="closeP()">✕</button>
+  </div>
+  <div class="panel-body" id="pbody"></div>
+</div>
+
+<div class="modal-ov" id="addM">
+  <div class="modal">
+    <div class="modal-hd">
+      <h2>Neuen Kunden anlegen</h2>
+      <button class="xbtn" style="background:var(--bg);color:var(--text)" onclick="closeAdd()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="egrid">
+        <div class="fg"><label>Name *</label><input id="an" placeholder="Max Mustermann"></div>
+        <div class="fg"><label>Telefon</label><input id="ap" placeholder="+49 151..."></div>
+        <div class="fg"><label>E-Mail</label><input id="ae" placeholder="max@mail.de"></div>
+        <div class="fg"><label>WhatsApp</label><input id="aw" placeholder="+49 151..."></div>
+        <div class="fg"><label>Produkt</label>
+          <select id="aprod">
+            <option value="PV">☀️ Photovoltaik</option>
+            <option value="PV+Speicher">☀️🔋 PV+Speicher</option>
+            <option value="WP">🌡️ Wärmepumpe</option>
+            <option value="PV+WP">☀️🌡️ PV+WP</option>
+          </select>
+        </div>
+        <div class="fg"><label>Priorität</label>
+          <select id="aprio">
+            <option value="hot">🔴 Heiß</option>
+            <option value="warm">🟡 Warm</option>
+            <option value="cold">🔵 Kalt</option>
+          </select>
+        </div>
+        <div class="fg"><label>Aufmaß-Termin</label><input id="ad" type="date"></div>
+        <div class="fg"><label>Angebots-Termin</label><input id="aod" type="date"></div>
+        <div class="fg"><label>Strom kWh/Jahr</label><input id="ast" placeholder="4500"></div>
+        <div class="fg"><label>€/kWh</label><input id="asp" placeholder="0.32"></div>
+        <div class="fg"><label>kWp</label><input id="akwp" placeholder="12"></div>
+        <div class="fg"><label>Preis €</label><input id="apr" placeholder="22000"></div>
+        <div class="fg full"><label>Painpoint</label><input id="apain" placeholder="Hohe Stromkosten..."></div>
+        <div class="fg full"><label>Notizen</label><textarea id="anotes"></textarea></div>
+      </div>
+      <div class="modal-act">
+        <button class="btn btn-muted" onclick="closeAdd()">Abbrechen</button>
+        <button class="btn btn-primary" onclick="addC()">✓ Anlegen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="pdM">
+  <div class="modal">
+    <div class="modal-hd">
+      <h2>🔗 Pipedrive Import</h2>
+      <button class="xbtn" style="background:var(--bg);color:var(--text)" onclick="closePD()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="pds1">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">
+          Token findest du unter: <strong style="color:var(--text)">Einstellungen → Persönliche Einstellungen → API</strong>
+        </p>
+        <div class="fg full" style="margin-bottom:12px">
+          <label>API Token</label>
+          <input id="pdt" type="password" placeholder="Token einfügen...">
+        </div>
+        <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:10px;font-size:12px;color:var(--muted);margin-bottom:14px">
+          🔒 Token wird nur lokal gespeichert.
+        </div>
+        <div class="modal-act" style="border:none;padding:0;margin:0">
+          <button class="btn btn-muted" onclick="closePD()">Abbrechen</button>
+          <button class="btn btn-primary" onclick="loadDeals()">🔍 Deals laden</button>
+        </div>
+      </div>
+      <div id="pds2" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span id="pdfound" style="font-size:13px;font-weight:600"></span>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-muted" onclick="pdSel(true)">Alle</button>
+            <button class="btn btn-sm btn-muted" onclick="pdSel(false)">Keine</button>
+          </div>
+        </div>
+        <div id="pdlist" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px"></div>
+        <div id="pdok" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:7px;padding:9px 12px;font-size:13px;color:var(--green);margin-bottom:10px"></div>
+        <div class="modal-act" style="border:none;padding:0;margin:0">
+          <button class="btn btn-muted" onclick="pdBack()">← Zurück</button>
+          <button class="btn btn-primary" onclick="pdImport()">✓ Importieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+var PROXY = 'https://pipedrive-proxy.ghd5cfkf55.workers.dev';
+
+var TPS = [
+  {i:'\u260E',l:'Telefonat',d:'Termin vereinbaren'},
+  {i:'\u2709',l:'Terminbestätigung',d:'Mail mit Details'},
+  {i:'\uD83D\uDCF1',l:'Tag-vor-SMS',d:'Erinnerung + Abrechnungen'},
+  {i:'\u260E',l:'Anruf unterwegs',d:'Wo kann ich parken?'},
+  {i:'\uD83C\uDFE0',l:'Aufmaß',d:'Vor Ort Termin'},
+  {i:'\uD83D\uDCCB',l:'Zusammenfassung',d:'Strom, Gas, Painpoint'},
+  {i:'\uD83D\uDCF1',l:'Info WhatsApp',d:'PDF / Video senden'},
+  {i:'\u2709',l:'Angebot',d:'Aurora Angebot per Mail'},
+  {i:'\u260E',l:'Nachfass-Anruf',d:'Angebot erhalten?'},
+  {i:'\u260E',l:'FOMO-Anruf',d:'Komme 5 Min später – letzter Kunde kaufte auch!'},
+  {i:'\uD83E\uDD1D',l:'Abschluss',d:'Angebotsbesprechung -> Kauf!'}
+];
+
+var customers = [
+  {id:1,name:'Schäffler',phone:'+49 151 11111111',email:'s@mail.de',wa:'+4915111111111',product:'PV+Speicher',prio:'hot',date:'2026-04-11',offerdate:'2026-04-18',strom:'5200',strompreis:'0.34',kwp:'14',preis:'26000',pain:'Hohe Stromrechnung',notes:'Speicher gewünscht',step:8,completed:[0,1,2,3,4,5,6,7],pdId:null},
+  {id:2,name:'Budel',phone:'+49 151 22222222',email:'b@mail.de',wa:'+4915122222222',product:'PV',prio:'warm',date:'2026-03-20',offerdate:'2026-03-27',strom:'4100',strompreis:'0.32',kwp:'10',preis:'18500',pain:'Stromkosten senken',notes:'',step:10,completed:[0,1,2,3,4,5,6,7,8,9],pdId:null},
+  {id:3,name:'Kempen',phone:'+49 151 33333333',email:'k@mail.de',wa:'+4915133333333',product:'PV+WP',prio:'hot',date:'2026-03-24',offerdate:'2026-04-02',strom:'6800',strompreis:'0.33',kwp:'18',preis:'38000',pain:'Gas raus komplett',notes:'PV+WP Kombi',step:5,completed:[0,1,2,3,4],pdId:null},
+  {id:4,name:'Hauck',phone:'+49 151 44444444',email:'h@mail.de',wa:'+4915144444444',product:'PV',prio:'warm',date:'',offerdate:'',strom:'4200',strompreis:'0.32',kwp:'11',preis:'20000',pain:'NB anmelden',notes:'Finanzierung klären',step:0,completed:[],pdId:null},
+  {id:5,name:'Richter',phone:'+49 151 55555555',email:'r@mail.de',wa:'+4915155555555',product:'PV',prio:'hot',date:'',offerdate:'2026-03-28',strom:'5000',strompreis:'0.33',kwp:'13',preis:'24000',pain:'Rentner fixe Kosten',notes:'Termin unklar!',step:9,completed:[0,1,2,3,4,5,6,7,8],pdId:null}
+];
+var nextId = 6;
+var activeId = null;
+var pdDeals = [];
+
+function render() {
+  var board = document.getElementById('board');
+  var q = document.getElementById('q').value.toLowerCase();
+  board.innerHTML = '';
+  var risk=0,act=0,won=0,vol=0;
+  customers.forEach(function(c) {
+    if(c.step===10) won++; else if(c.prio==='hot') risk++; else act++;
+    vol += parseInt(c.preis||0)||0;
+  });
+  document.getElementById('sr').textContent = risk;
+  document.getElementById('sa').textContent = act;
+  document.getElementById('sw').textContent = won;
+  document.getElementById('sv').textContent = Math.round(vol/1000)+'KEUR';
+
+  TPS.forEach(function(tp, ci) {
+    var col = document.createElement('div');
+    col.className = 'col';
+    var colC = customers.filter(function(c){ return c.step===ci && c.name.toLowerCase().indexOf(q)!==-1; });
+    var hd = document.createElement('div');
+    hd.className = 'col-hd';
+    hd.innerHTML = '<div class="col-ti"><span>'+tp.i+' '+tp.l+'</span><span class="col-cnt">'+colC.length+'</span></div><div class="col-de">'+tp.d+'</div>';
+    var bd = document.createElement('div');
+    bd.className = 'col-bd';
+    colC.forEach(function(c) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      var dots = '';
+      for(var d=0;d<11;d++) dots += '<div class="dot'+(c.completed.indexOf(d)!==-1?' done':d===c.step?' cur':'')+'"></div>';
+      var pt = c.prio==='hot'?'<span class="tag tag-hot">\uD83D\uDD34 Heiß</span>':c.prio==='warm'?'<span class="tag tag-warm">\uD83D\uDFE1 Warm</span>':'<span class="tag tag-cold">\uD83D\uDD35 Kalt</span>';
+      var warn = (c.prio==='hot'&&!c.offerdate&&c.step<10)?'<div class="card-warn">\u26A0 Kein Angebotstermin!</div>':'';
+      var pdTag = c.pdId?'<span class="tag tag-pd">PD</span>':'';
+      card.innerHTML = '<div class="card-name">'+c.name+'</div>'
+        +'<div class="card-meta">Step '+(c.step+1)+'/11'+(c.date&&c.date!=='???'?' . 📅'+fmtD(c.date):(c.date==='???'?' . \u26A0 unklar':''))+'</div>'
+        +'<div class="progress">'+dots+'</div>'
+        +'<div class="tags">'+pt+'<span class="tag" style="background:rgba(245,158,11,.1);color:var(--orange)">'+c.product+'</span>'+pdTag+'</div>'
+        +warn
+        +'<div class="card-btns">'
+        +(c.wa?'<button class="btn btn-sm btn-wa">\uD83D\uDCF1</button>':'')
+        +(c.email?'<button class="btn btn-sm btn-blue">\u2709</button>':'')
+        +(c.phone?'<button class="btn btn-sm btn-muted">\u260E</button>':'')
+        +'</div>';
+      // WA button
+      var btns = card.querySelectorAll('.card-btns .btn');
+      var bi = 0;
+      if(c.wa) { (function(id){ btns[bi].onclick=function(e){e.stopPropagation();doWA(id);}; })(c.id); bi++; }
+      if(c.email) { (function(id){ btns[bi].onclick=function(e){e.stopPropagation();doMail(id);}; })(c.id); bi++; }
+      if(c.phone) { (function(id){ btns[bi].onclick=function(e){e.stopPropagation();doCall(id);}; })(c.id); bi++; }
+      card.addEventListener('click', (function(id){ return function(){ openPanel(id); }; })(c.id));
+      bd.appendChild(card);
+    });
+    col.appendChild(hd);
+    col.appendChild(bd);
+    board.appendChild(col);
+  });
+}
+
+function openPanel(id) {
+  var c = customers.filter(function(x){ return x.id===id; })[0];
+  if(!c) return;
+  activeId = id;
+  document.getElementById('pti').textContent = c.name;
+  document.getElementById('psu').textContent = c.product+' . Step '+(c.step+1)+'/11';
+  var body = document.getElementById('pbody');
+  body.innerHTML = '';
+
+  // EDIT SECTION
+  var s1 = mkSec('\u270F Kundendaten bearbeiten');
+  var eg = document.createElement('div');
+  eg.className = 'egrid';
+  eg.innerHTML =
+    '<div class="fg"><label>Name</label><input id="ef-n" value="'+esc(c.name)+'"></div>'
+    +'<div class="fg"><label>Telefon</label><input id="ef-p" value="'+esc(c.phone)+'"></div>'
+    +'<div class="fg"><label>E-Mail</label><input id="ef-e" value="'+esc(c.email)+'"></div>'
+    +'<div class="fg"><label>WhatsApp</label><input id="ef-w" value="'+esc(c.wa)+'"></div>'
+    +'<div class="fg"><label>Produkt</label><select id="ef-prod">'
+      +'<option value="PV"'+(c.product==='PV'?' selected':'')+'>\u2600 PV</option>'
+      +'<option value="PV+Speicher"'+(c.product==='PV+Speicher'?' selected':'')+'>\u2600\uD83D\uDD0B PV+Speicher</option>'
+      +'<option value="WP"'+(c.product==='WP'?' selected':'')+'>\uD83C\uDF21 WP</option>'
+      +'<option value="PV+WP"'+(c.product==='PV+WP'?' selected':'')+'>\u2600\uD83C\uDF21 PV+WP</option>'
+    +'</select></div>'
+    +'<div class="fg"><label>Priorität</label><select id="ef-prio">'
+      +'<option value="hot"'+(c.prio==='hot'?' selected':'')+'>\uD83D\uDD34 Heiß</option>'
+      +'<option value="warm"'+(c.prio==='warm'?' selected':'')+'>\uD83D\uDFE1 Warm</option>'
+      +'<option value="cold"'+(c.prio==='cold'?' selected':'')+'>\uD83D\uDD35 Kalt</option>'
+    +'</select></div>'
+    +'<div class="fg"><label>Aufmaß-Termin</label><input id="ef-d" type="date" value="'+(c.date&&c.date!=='???'?c.date:'')+'"></div>'
+    +'<div class="fg"><label>Angebots-Termin</label><input id="ef-od" type="date" value="'+(c.offerdate||'')+'"></div>'
+    +'<div class="fg"><label>Strom kWh/Jahr</label><input id="ef-st" value="'+esc(c.strom)+'"></div>'
+    +'<div class="fg"><label>EUR/kWh</label><input id="ef-sp" value="'+esc(c.strompreis)+'"></div>'
+    +'<div class="fg"><label>kWp</label><input id="ef-kwp" value="'+esc(c.kwp)+'"></div>'
+    +'<div class="fg"><label>Preis EUR</label><input id="ef-pr" value="'+esc(c.preis)+'"></div>'
+    +'<div class="fg full"><label>Painpoint</label><input id="ef-pain" value="'+esc(c.pain)+'"></div>'
+    +'<div class="fg full"><label>Notizen</label><textarea id="ef-notes">'+esc(c.notes)+'</textarea></div>';
+  s1.appendChild(eg);
+  var sbRow = document.createElement('div');
+  sbRow.style.cssText = 'display:flex;gap:8px;margin-top:10px';
+  var saveBtn = document.createElement('button');
+  saveBtn.className = 'btn btn-primary btn-sm';
+  saveBtn.textContent = '\uD83D\uDCBE Speichern';
+  saveBtn.onclick = function(){ saveC(id); };
+  var delBtn = document.createElement('button');
+  delBtn.className = 'btn btn-red btn-sm';
+  delBtn.textContent = '\uD83D\uDDD1 Löschen';
+  delBtn.onclick = function(){ delC(id); };
+  sbRow.appendChild(saveBtn);
+  sbRow.appendChild(delBtn);
+  s1.appendChild(sbRow);
+  body.appendChild(s1);
+
+  // VERBRAUCH
+  if(c.strom && c.strompreis) {
+    var s2 = mkSec('\uD83D\uDCCA Verbrauchsdaten');
+    var yearly = Math.round(parseInt(c.strom)*parseFloat(c.strompreis));
+    var ig = document.createElement('div');
+    ig.className = 'igrid';
+    ig.innerHTML = '<div class="ii"><label>Strom/Jahr</label><span>'+parseInt(c.strom).toLocaleString('de')+' kWh</span></div>'
+      +'<div class="ii"><label>EUR/kWh</label><span>'+c.strompreis+'EUR</span></div>'
+      +(c.kwp?'<div class="ii"><label>Anlage</label><span>'+c.kwp+' kWp</span></div>':'')
+      +(c.preis?'<div class="ii"><label>Preis</label><span>'+parseInt(c.preis).toLocaleString('de')+'EUR</span></div>':'')
+      +'<div class="ii full" style="border-left:3px solid var(--red)"><label>\u26A1 Kosten ohne PV</label><span style="color:var(--red)">'+yearly.toLocaleString('de')+'EUR/Jahr</span></div>';
+    s2.appendChild(ig);
+    body.appendChild(s2);
+  }
+
+  // TOUCHPOINTS
+  var s3 = mkSec('\uD83C\uDFAF Touchpoints');
+  var tpl = document.createElement('div');
+  tpl.className = 'tplist';
+  TPS.forEach(function(tp, i) {
+    var done = c.completed.indexOf(i)!==-1;
+    var cur = c.step===i;
+    var item = document.createElement('div');
+    item.className = 'tpi'+(done?' tp-done':cur?' tp-cur':'');
+    var ck = document.createElement('div');
+    ck.className = 'tpck'+(done?' ck-done':cur?' ck-cur':'');
+    ck.textContent = done?'✓':cur?'->':'';
+    ck.onclick = (function(cid,ti){ return function(){ toggleTP(cid,ti); }; })(id,i);
+    var ct = document.createElement('div');
+    ct.style.flex = '1';
+    ct.innerHTML = '<div style="font-size:12px;font-weight:500">'+tp.i+' '+tp.l+'</div><div style="font-size:10px;color:var(--muted)">'+tp.d+'</div>';
+    item.appendChild(ck);
+    item.appendChild(ct);
+    // action button
+    var ab = null;
+    if((i===0||i===3||i===8||i===9)&&c.phone){ ab=document.createElement('button');ab.className='btn btn-sm btn-muted';ab.textContent='\u260E';ab.onclick=(function(cid){return function(){doCall(cid);};})(id); }
+    else if((i===1||i===7)&&c.email){ ab=document.createElement('button');ab.className='btn btn-sm btn-blue';ab.textContent='\u2709';ab.onclick=(function(cid){return function(){doMail(cid);};})(id); }
+    else if((i===2||i===6)&&c.wa){ ab=document.createElement('button');ab.className='btn btn-sm btn-wa';ab.textContent='\uD83D\uDCF1';ab.onclick=(function(cid){return function(){doWA(cid);};})(id); }
+    if(ab) item.appendChild(ab);
+    tpl.appendChild(item);
+  });
+  s3.appendChild(tpl);
+  body.appendChild(s3);
+
+  // PIPEDRIVE SYNC
+  var s4 = mkSec('\uD83D\uDD17 Pipedrive Sync');
+  if(c.pdId) {
+    var pdInfo = document.createElement('div');
+    pdInfo.style.cssText = 'font-size:11px;color:var(--muted);margin-bottom:10px';
+    pdInfo.innerHTML = 'Deal <strong style="color:#ff8040">#'+c.pdId+'</strong>';
+    s4.appendChild(pdInfo);
+
+    var nb = document.createElement('div');
+    nb.className = 'pdb';
+    nb.innerHTML = '<div class="pdb-ti">📝 Notiz hinzufügen</div>';
+    var ta = document.createElement('textarea');
+    ta.className = 'pd-ta';
+    ta.placeholder = 'Notiz wird direkt in Pipedrive gespeichert...';
+    var svn = document.createElement('button');
+    svn.className = 'btn btn-sm btn-primary';
+    svn.textContent = '-> In Pipedrive speichern';
+    svn.onclick = (function(cid,textarea){ return function(){ pdNote(cid,textarea.value); }; })(id,ta);
+    nb.appendChild(ta);
+    nb.appendChild(svn);
+    s4.appendChild(nb);
+
+    var ab2 = document.createElement('div');
+    ab2.className = 'pdb';
+    ab2.innerHTML = '<div class="pdb-ti">🔄 Aktionen</div>';
+    var upd = document.createElement('button');
+    upd.className = 'btn btn-sm btn-blue';
+    upd.textContent = '🔄 Deal updaten';
+    upd.style.marginRight = '8px';
+    upd.onclick = (function(cid){ return function(){ pdUpdate(cid); }; })(id);
+    var act = document.createElement('button');
+    act.className = 'btn btn-sm btn-green';
+    act.textContent = '\u2705 Als erledigt';
+    act.onclick = (function(cid){ return function(){ pdActivity(cid); }; })(id);
+    ab2.appendChild(upd);
+    ab2.appendChild(act);
+    s4.appendChild(ab2);
+  } else {
+    var noLink = document.createElement('div');
+    noLink.style.cssText = 'background:var(--bg);border-radius:8px;padding:12px;font-size:12px;color:var(--muted)';
+    noLink.innerHTML = 'Manuell angelegt – kein Pipedrive Deal verknüpft.<br><strong style="color:var(--text)">Importiere über den Pipedrive Button.</strong>';
+    s4.appendChild(noLink);
+  }
+  body.appendChild(s4);
+
+  // ERINNERUNG
+  var s5 = mkSec('\uD83D\uDD14 Erinnerung setzen');
+  var rw = document.createElement('div');
+  rw.style.cssText = 'display:flex;gap:8px';
+  var ri = document.createElement('input');
+  ri.type = 'datetime-local';
+  ri.style.cssText = 'flex:1;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-family:Outfit,sans-serif;font-size:13px;color:var(--text);outline:none';
+  var rb = document.createElement('button');
+  rb.className = 'btn btn-sm btn-primary';
+  rb.textContent = 'Setzen';
+  rb.onclick = (function(cid,input){ return function(){ setRem(cid,input.value); }; })(id,ri);
+  rw.appendChild(ri);
+  rw.appendChild(rb);
+  s5.appendChild(rw);
+  body.appendChild(s5);
+
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+}
+
+function mkSec(title) {
+  var s = document.createElement('div');
+  s.innerHTML = '<div class="sec-ti">'+title+'</div>';
+  return s;
+}
+
+function closeP() {
+  document.getElementById('ov').classList.remove('open');
+  document.getElementById('panel').classList.remove('open');
+  activeId = null;
+}
+
+function saveC(id) {
+  var c = customers.filter(function(x){ return x.id===id; })[0];
+  if(!c) return;
+  c.name = document.getElementById('ef-n').value.trim()||c.name;
+  c.phone = document.getElementById('ef-p').value.trim();
+  c.email = document.getElementById('ef-e').value.trim();
+  c.wa = document.getElementById('ef-w').value.trim();
+  c.product = document.getElementById('ef-prod').value;
+  c.prio = document.getElementById('ef-prio').value;
+  c.date = document.getElementById('ef-d').value;
+  c.offerdate = document.getElementById('ef-od').value;
+  c.strom = document.getElementById('ef-st').value.trim();
+  c.strompreis = document.getElementById('ef-sp').value.trim();
+  c.kwp = document.getElementById('ef-kwp').value.trim();
+  c.preis = document.getElementById('ef-pr').value.trim();
+  c.pain = document.getElementById('ef-pain').value.trim();
+  c.notes = document.getElementById('ef-notes').value.trim();
+  saveLS(); render(); openPanel(id); toast('\u2705 Gespeichert!');
+}
+
+function delC(id) {
+  var c = customers.filter(function(x){ return x.id===id; })[0];
+  if(!c||!confirm(c.name+' wirklich löschen?')) return;
+  customers = customers.filter(function(x){ return x.id!==id; });
+  closeP(); saveLS(); render(); toast('\uD83D\uDDD1 Gelöscht');
+}
+
+function toggleTP(id, i) {
+  var c = customers.filter(function(x){ return x.id===id; })[0];
+  if(!c) return;
+  var idx = c.completed.indexOf(i);
+  if(idx!==-1) c.completed.splice(idx,1); else c.completed.push(i);
+  var next = 0;
+  for(var j=0;j<=10;j++){ if(c.completed.indexOf(j)===-1){next=j;break;} if(j===10) next=11; }
+  c.step = Math.min(next,10);
+  saveLS(); render(); openPanel(id); toast('\u2705 '+TPS[i].l+' aktualisiert');
+}
+
+function showAdd() { document.getElementById('addM').classList.add('open'); }
+function closeAdd() { document.getElementById('addM').classList.remove('open'); }
+
+function addC() {
+  var name = document.getElementById('an').value.trim();
+  if(!name){ toast('\u26A0 Bitte Namen eingeben'); return; }
+  customers.push({
+    id:nextId++,name:name,
+    phone:document.getElementById('ap').value.trim(),
+    email:document.getElementById('ae').value.trim(),
+    wa:document.getElementById('aw').value.trim(),
+    product:document.getElementById('aprod').value,
+    prio:document.getElementById('aprio').value,
+    date:document.getElementById('ad').value,
+    offerdate:document.getElementById('aod').value,
+    strom:document.getElementById('ast').value.trim(),
+    strompreis:document.getElementById('asp').value.trim(),
+    kwp:document.getElementById('akwp').value.trim(),
+    preis:document.getElementById('apr').value.trim(),
+    pain:document.getElementById('apain').value.trim(),
+    notes:document.getElementById('anotes').value.trim(),
+    step:0,completed:[],pdId:null
+  });
+  closeAdd(); saveLS(); render(); toast('\uD83C\uDF89 '+name+' angelegt!');
+  ['an','ap','ae','aw','ad','aod','ast','asp','akwp','apr','apain','anotes'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+}
+
+function doWA(id) {
+  var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.wa) return;
+  window.open('https://wa.me/'+c.wa.replace(/\D/g,'')+'?text='+encodeURIComponent('Guten Tag '+c.name.split('/')[0].trim()+' 😊'),'_blank');
+  toast('\uD83D\uDCF1 WhatsApp geöffnet');
+}
+function doMail(id) {
+  var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.email) return;
+  window.open('mailto:'+c.email+'?subject='+encodeURIComponent('Ihr Angebot – '+c.product),'_blank');
+  toast('\u2709 Mail geöffnet');
+}
+function doCall(id) {
+  var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.phone) return;
+  window.open('tel:'+c.phone,'_blank'); toast('\u260E Anruf');
+}
+
+function showPD() {
+  document.getElementById('pdM').classList.add('open');
+  document.getElementById('pds1').style.display='block';
+  document.getElementById('pds2').style.display='none';
+  var t=localStorage.getItem('pd_t'); if(t) document.getElementById('pdt').placeholder='••••• (gespeichert)';
+}
+function closePD() { document.getElementById('pdM').classList.remove('open'); }
+function pdBack() { document.getElementById('pds1').style.display='block'; document.getElementById('pds2').style.display='none'; }
+function pdSel(v) { pdDeals.forEach(function(d){ var cb=document.getElementById('pdc-'+d.id); if(cb&&!cb.disabled) cb.checked=v; }); }
+
+function loadDeals() {
+  var inp=document.getElementById('pdt').value.trim();
+  var token=inp||localStorage.getItem('pd_t');
+  if(!token){ toast('\u26A0 Token eingeben!'); return; }
+  toast('\u23F3 Lade...');
+  fetch(PROXY+'?path='+encodeURIComponent('deals?status=open&limit=100'),{headers:{'X-PD-Token':token}})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!d.success){toast('❌ Token ungültig!');return;}
+    if(inp) localStorage.setItem('pd_t',inp);
+    pdDeals=d.data||[];
+    var promises=pdDeals.map(function(deal){
+      if(deal.person_id&&deal.person_id.value){
+        return fetch(PROXY+'?path='+encodeURIComponent('persons/'+deal.person_id.value),{headers:{'X-PD-Token':token}})
+        .then(function(r){return r.json();})
+        .then(function(pd){if(pd.success) deal._person=pd.data;})
+        .catch(function(){});
+      }
+      return Promise.resolve();
+    });
+    return Promise.all(promises);
+  })
+  .then(function(){
+    var list=document.getElementById('pdlist');
+    list.innerHTML='';
+    var ex=customers.map(function(c){return c.pdId;}).filter(Boolean);
+    pdDeals.forEach(function(d){
+      var already=ex.indexOf(d.id)!==-1;
+      var phone=d._person&&d._person.phone&&d._person.phone[0]?d._person.phone[0].value:'';
+      var email=d._person&&d._person.email&&d._person.email[0]?d._person.email[0].value:'';
+      var val=d.value?parseInt(d.value).toLocaleString('de')+'EUR':'—';
+      var row=document.createElement('div');
+      row.style.cssText='display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:7px;border:1px solid var(--border);background:'+(already?'rgba(16,185,129,.05)':'var(--bg)')+';margin-bottom:4px';
+      row.innerHTML='<input type="checkbox" id="pdc-'+d.id+'" '+(already?'disabled checked':'checked')+' style="width:15px;height:15px;accent-color:var(--accent);flex-shrink:0">'
+        +'<div style="flex:1"><div style="font-size:13px;font-weight:600">'+d.title+'</div>'
+        +'<div style="font-size:11px;color:var(--muted)">'+(phone?'\u260E '+phone+' . ':'')+' \uD83D\uDCB0 '+val+(already?' <span style="color:var(--green)">✓</span>':'')+'</div></div>';
+      list.appendChild(row);
+    });
+    var ex2=customers.map(function(c){return c.pdId;}).filter(Boolean);
+    var neu=pdDeals.filter(function(d){return ex2.indexOf(d.id)===-1;}).length;
+    document.getElementById('pdfound').textContent=pdDeals.length+' Deals . '+neu+' neu';
+    document.getElementById('pds1').style.display='none';
+    document.getElementById('pds2').style.display='block';
+    toast('\u2705 '+pdDeals.length+' Deals geladen!');
+  })
+  .catch(function(e){ toast('❌ '+e.message); });
+}
+
+function pdImport() {
+  var ex=customers.map(function(c){return c.pdId;}).filter(Boolean);
+  var n=0;
+  pdDeals.forEach(function(d){
+    var cb=document.getElementById('pdc-'+d.id);
+    if(!cb||!cb.checked||cb.disabled||ex.indexOf(d.id)!==-1) return;
+    var phone=d._person&&d._person.phone&&d._person.phone[0]?d._person.phone[0].value:'';
+    var email=d._person&&d._person.email&&d._person.email[0]?d._person.email[0].value:'';
+    var sm={1:0,2:1,3:2,4:4,5:7,6:10};
+    var step=sm[d.stage_id]||0;
+    customers.push({id:nextId++,pdId:d.id,name:d.title||'Unbekannt',phone:phone,email:email,wa:phone,product:'PV',prio:d.probability>=70?'hot':d.probability>=40?'warm':'cold',date:d.expected_close_date||'',offerdate:'',strom:'',strompreis:'',kwp:'',preis:d.value?String(parseInt(d.value)):'',pain:d.title||'',notes:'📥 Aus Pipedrive #'+d.id,step:step,completed:(function(){var a=[];for(var i=0;i<step;i++)a.push(i);return a;})()});
+    n++;
+  });
+  if(!n){toast('\u26A0 Keine neuen Deals');return;}
+  var ok=document.getElementById('pdok');
+  ok.style.display='block'; ok.textContent='\u2705 '+n+' importiert!';
+  saveLS(); render(); toast('\uD83C\uDF89 '+n+' Deals importiert!');
+  setTimeout(closePD,1500);
+}
+
+function pdReq(path,method,body) {
+  var token=localStorage.getItem('pd_t');
+  if(!token){toast('\u26A0 Kein Token');return Promise.resolve(null);}
+  var opts={method:'POST',headers:{'Content-Type':'application/json','X-PD-Token':token,'X-PD-Method':method}};
+  if(body) opts.body=JSON.stringify(body);
+  return fetch(PROXY+'?path='+encodeURIComponent(path),opts).then(function(r){return r.json();}).catch(function(e){toast('❌ '+e.message);return null;});
+}
+
+function pdNote(id,text) {
+  var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.pdId) return;
+  if(!text.trim()){toast('\u26A0 Notiz eingeben');return;}
+  toast('\u23F3 Speichere...');
+  pdReq('notes','POST',{content:text.trim(),deal_id:c.pdId}).then(function(r){
+    if(r&&r.success) toast('\u2705 Notiz gespeichert!'); else toast('❌ Fehler');
+  });
+}
+
+function pdUpdate(id) {
+  var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.pdId) return;
+  toast('\u23F3 Update...');
+  var sm={0:1,1:2,2:3,3:3,4:4,5:4,6:5,7:5,8:5,9:6,10:6};
+  pdReq('deals/'+c.pdId,'PUT',{stage_id:sm[c.step]||1,value:c.preis?parseInt(c.preis):undefined}).then(function(r){
+    if(r&&r.success) toast('\u2705 Deal aktualisiert!'); else toast('❌ Fehler');
+  });
+}
+
+function pdActivity(id) {
+  var c=customers.filter(function(x){return x.id===id;})[0]; if(!c||!c.pdId) return;
+  toast('\u23F3 Eintragen...');
+  pdReq('activities','POST',{subject:(TPS[c.step]?TPS[c.step].l:'Schritt')+' erledigt',deal_id:c.pdId,due_date:new Date().toISOString().split('T')[0],type:'call',done:1}).then(function(r){
+    if(r&&r.success) toast('\u2705 Aktivität eingetragen!'); else toast('❌ Fehler');
+  });
+}
+
+function reqN() {
+  if('Notification' in window) Notification.requestPermission().then(function(p){ toast(p==='granted'?'\uD83D\uDD14 Aktiviert!':'\u26A0 Bitte erlauben'); });
+}
+
+function setRem(id,val) {
+  var c=customers.filter(function(x){return x.id===id;})[0];
+  if(!val){toast('\u26A0 Datum wählen');return;}
+  var delay=new Date(val).getTime()-Date.now();
+  if(delay<=0){toast('\u26A0 Vergangenheit');return;}
+  toast('\u23F0 Erinnerung gesetzt!');
+  setTimeout(function(){
+    if('Notification' in window&&Notification.permission==='granted') new Notification('SolarCRM – '+c.name,{body:TPS[c.step]?TPS[c.step].l:''});
+    toast('\uD83D\uDD14 '+c.name);
+  },delay);
+}
+
+function fmtD(d){ try{var p=d.split('-');return p[2]+'.'+p[1]+'.'+p[0].slice(2);}catch(e){return d;} }
+function esc(v){ return (v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function toast(msg) {
+  var w=document.getElementById('toasts');
+  var t=document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  w.appendChild(t); setTimeout(function(){t.remove();},4000);
+}
+var VERSION = 'v5';
+function saveLS() {
+  try{
+    localStorage.setItem('sc_ver', VERSION);
+    localStorage.setItem('sc_c', JSON.stringify(customers));
+    localStorage.setItem('sc_id', String(nextId));
+  }catch(e){}
+}
+function loadLS() {
+  try{
+    var ver = localStorage.getItem('sc_ver');
+    if(ver !== VERSION) {
+      localStorage.clear();
+      localStorage.setItem('sc_ver', VERSION);
+      return;
+    }
+    var c = localStorage.getItem('sc_c');
+    var n = localStorage.getItem('sc_id');
+    if(c){ var p=JSON.parse(c); if(p&&p.length>0) customers=p; }
+    if(n) nextId=parseInt(n);
+  }catch(e){ localStorage.clear(); }
+}
+
+document.getElementById('addM').addEventListener('click',function(e){if(e.target===e.currentTarget)closeAdd();});
+document.getElementById('pdM').addEventListener('click',function(e){if(e.target===e.currentTarget)closePD();});
+
+loadLS();
+render();
+</script>
+</body>
+</html>
