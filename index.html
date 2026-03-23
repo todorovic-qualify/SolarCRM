@@ -714,28 +714,27 @@ var t=document.createElement(‘div’);
 t.className=‘toast’; t.textContent=msg;
 w.appendChild(t); setTimeout(function(){t.remove();},4000);
 }
+var VERSION = ‘v5’;
 function saveLS() {
-try{localStorage.setItem(‘sc2_c’,JSON.stringify(customers));localStorage.setItem(‘sc2_id’,nextId);}catch(e){}
+try{
+localStorage.setItem(‘sc_ver’, VERSION);
+localStorage.setItem(‘sc_c’, JSON.stringify(customers));
+localStorage.setItem(‘sc_id’, String(nextId));
+}catch(e){}
 }
 function loadLS() {
 try{
-// Clear old broken versions
-localStorage.removeItem(‘sc_c’);
-localStorage.removeItem(‘sc_id’);
-localStorage.removeItem(‘solarcrm_customers’);
-localStorage.removeItem(‘solarcrm_nextid’);
-localStorage.removeItem(‘scrm_c’);
-localStorage.removeItem(‘scrm_id’);
-// Reset via URL param
-if(window.location.search.indexOf(‘reset’)!==-1){
-localStorage.removeItem(‘sc2_c’);
-localStorage.removeItem(‘sc2_id’);
-window.location.href = window.location.pathname;
+var ver = localStorage.getItem(‘sc_ver’);
+if(ver !== VERSION) {
+localStorage.clear();
+localStorage.setItem(‘sc_ver’, VERSION);
 return;
 }
-var c=localStorage.getItem(‘sc2_c’); if(c) customers=JSON.parse(c);
-var n=localStorage.getItem(‘sc2_id’); if(n) nextId=parseInt(n);
-}catch(e){}
+var c = localStorage.getItem(‘sc_c’);
+var n = localStorage.getItem(‘sc_id’);
+if(c){ var p=JSON.parse(c); if(p&&p.length>0) customers=p; }
+if(n) nextId=parseInt(n);
+}catch(e){ localStorage.clear(); }
 }
 
 document.getElementById(‘addM’).addEventListener(‘click’,function(e){if(e.target===e.currentTarget)closeAdd();});
