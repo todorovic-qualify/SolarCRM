@@ -58,7 +58,14 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);heig
 .tag-warm{background:rgba(245,158,11,.1);color:var(--accent)}
 .tag-cold{background:rgba(100,116,139,.1);color:var(--muted)}
 .tag-pd{background:rgba(255,140,50,.1);color:#ff8040}
-.tag-src{background:rgba(139,92,246,.1);color:#8b5cf6;font-size:9px}
+.tag-src{font-size:9px;border-radius:20px;padding:2px 6px;font-weight:700}
+.src-hauskonzepte{background:rgba(5,150,105,.15);color:#059669;border:1px solid rgba(5,150,105,.3)}
+.src-energiehaus{background:rgba(139,92,246,.15);color:#7c3aed;border:1px solid rgba(139,92,246,.3)}
+.src-dww{background:rgba(59,130,246,.15);color:#2563eb;border:1px solid rgba(59,130,246,.3)}
+.src-pipedrive{background:rgba(255,140,50,.15);color:#ff8040;border:1px solid rgba(255,140,50,.3)}
+.src-opusflow{background:rgba(16,185,129,.15);color:#059669;border:1px solid rgba(16,185,129,.3)}
+.src-reonic{background:rgba(236,72,153,.15);color:#db2777;border:1px solid rgba(236,72,153,.3)}
+.src-default{background:rgba(100,116,139,.1);color:#64748b;border:1px solid rgba(100,116,139,.2)}
 .card-warn{margin-top:6px;padding:4px 8px;background:rgba(239,68,68,.07);border-radius:5px;font-size:11px;color:var(--red)}
 .card-btns{display:flex;gap:4px;margin-top:8px}
 .days-badge{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;width:20px;height:20px;font-size:10px;font-weight:700;flex-shrink:0;background:var(--red);color:#fff}
@@ -298,7 +305,28 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);heig
 
 <script>
 var PROXY = 'https://pipedrive-proxy.ghd5cfkf55.workers.dev';
-var VERSION = 'v12';
+
+// Company colors
+function getCompanyClass(company) {
+  if(!company) return 'src-default';
+  var c = company.toLowerCase();
+  if(c.indexOf('hauskonzepte') !== -1) return 'src-hauskonzepte';
+  if(c.indexOf('energiehaus') !== -1) return 'src-energiehaus';
+  if(c.indexOf('dww') !== -1) return 'src-dww';
+  return 'src-default';
+}
+function getCompanyColor(company) {
+  if(!company) return '#64748b';
+  var c = company.toLowerCase();
+  if(c.indexOf('hauskonzepte') !== -1) return '#059669';
+  if(c.indexOf('energiehaus') !== -1) return '#7c3aed';
+  if(c.indexOf('dww') !== -1) return '#2563eb';
+  if(c.indexOf('pipedrive') !== -1) return '#ff8040';
+  if(c.indexOf('opusflow') !== -1) return '#059669';
+  if(c.indexOf('reonic') !== -1) return '#db2777';
+  return '#64748b';
+}
+var VERSION = 'v13';
 
 var STAGES = [
   {l:'Neuer Lead',d:'Erstkontakt'},
@@ -368,7 +396,7 @@ function render() {
       for(var d=0;d<11;d++) dots += '<div class="dot'+(c.completed.indexOf(d)!==-1?' done':d===c.step?' cur':'')+'"></div>';
       var pt = c.prio==='hot'?'<span class="tag tag-hot">Heiss</span>':c.prio==='warm'?'<span class="tag tag-warm">Warm</span>':'<span class="tag tag-cold">Kalt</span>';
       var warn = (c.prio==='hot'&&!c.offerdate&&c.stage<5)?'<div class="card-warn">Kein Angebotstermin!</div>':'';
-      var srcTag = c.source?'<span class="tag tag-src">'+c.source.company+'</span>':'';
+      var srcTag = c.source?'<span class="tag tag-src '+getCompanyClass(c.source.company)+'">'+c.source.company+'</span>':'';
       // Days badge
       var daysBadge = '';
       if(c.lastActivity){
@@ -815,7 +843,22 @@ function pdImport() {
   var n=0;
   pdDeals.forEach(function(d){
     var cb=document.getElementById('pdc-'+d.id);
-    if(!cb||!cb.checked||cb.disabled||ex.indexOf(d.id)!==-1) return;
+    if(!cb||!cb.checked) return;
+    // Update existing deal stage
+    if(ex.indexOf(d.id)!==-1) {
+      var existing = customers.filter(function(c){ return c.pdId===d.id; })[0];
+      if(existing) {
+        var newStage=0;
+        for(var si=0;si<STAGES.length;si++){if(STAGES[si].pdId===d.stage_id){newStage=si;break;}}
+        if(existing.stage!==newStage){
+          existing.stage=newStage;
+          existing.lastActivity=new Date().toISOString();
+          toast('Stage aktualisiert: '+existing.name+' -> '+STAGES[newStage].l);
+          n++;
+        }
+      }
+      return;
+    }
     var phone=d._person&&d._person.phone&&d._person.phone[0]?d._person.phone[0].value:'';
     var email=d._person&&d._person.email&&d._person.email[0]?d._person.email[0].value:'';
     var stage=0;
@@ -914,7 +957,7 @@ function showOF(){
 }
 function closeOF(){document.getElementById('ofM').classList.remove('open');}
 function ofBack(){document.getElementById('ofs1').style.display='block';document.getElementById('ofs2').style.display='none';}
-function ofSel(v){ofRows.forEach(function(r,i){var cb=document.getElementById('ofc-'+i);if(cb&&!cb.disabled)cb.checked=v;});}
+function ofSel(v){ofRows.forEach(function(r,i){var cb=document.getElementById('ofc-'+i);if(cb)cb.checked=v;});}
 
 function parseOFcsv(){
   var file=document.getElementById('of-file').files[0];
@@ -1010,9 +1053,22 @@ function ofImport(){
   var n=0;
   ofRows.forEach(function(r,i){
     var cb=document.getElementById('ofc-'+i);
-    if(!cb||!cb.checked||cb.disabled) return;
+    if(!cb||!cb.checked) return;
     var ref=r['Referenz (N)']||'';
-    if(ref&&ex.indexOf(ref)!==-1) return;
+    // Check if already exists - UPDATE stage if so
+    if(ref&&ex.indexOf(ref)!==-1) {
+      var existing = customers.filter(function(c){ return c.ofRef===ref; })[0];
+      if(existing) {
+        var newStage = mapOFStage(r['Status']);
+        if(existing.stage !== newStage) {
+          existing.stage = newStage;
+          existing.lastActivity = new Date().toISOString();
+          toast('Stage aktualisiert: '+existing.name+' -> '+STAGES[newStage].l);
+          n++;
+        }
+      }
+      return;
+    }
     var name=r['Kontaktname']||r['Projektname']||'Unbekannt';
     var email=r['Kontakt E-Mail']||'';
     if(email==='-') email='';
@@ -1058,7 +1114,7 @@ function ofImport(){
     });
     n++;
   });
-  if(!n){toast('Keine neuen Projekte!');return;}
+  if(!n){toast('Keine Aenderungen gefunden');return;}
   var ok=document.getElementById('of-ok');
   ok.style.display='block';ok.textContent=n+' Projekte importiert!';
   saveLS();render();toast(n+' OpusFlow Projekte von '+comp+' importiert!');
