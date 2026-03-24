@@ -105,6 +105,12 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);heig
 .toasts{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
 .toast{background:var(--text);color:#fff;padding:10px 14px;border-radius:9px;font-size:13px;box-shadow:var(--shadow-lg);border-left:3px solid var(--accent);animation:tIn .3s ease}
 @keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+.days-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--red);color:#fff;border-radius:50%;width:20px;height:20px;font-size:10px;font-weight:700;margin-left:4px;flex-shrink:0}
+.days-badge.warn{background:var(--orange)}
+.days-badge.ok{background:var(--green)}
+.card{position:relative}
+.card.dragging{opacity:0.4;border:2px dashed var(--accent)}
+.col-bd.drag-over{background:rgba(245,158,11,0.08);border-radius:8px;border:2px dashed var(--accent)}
 </style>
 </head>
 <body>
@@ -303,8 +309,14 @@ function render() {
       for(var d=0;d<11;d++) dots += '<div class="dot'+(c.completed.indexOf(d)!==-1?' done':d===c.step?' cur':'')+'"></div>';
       var pt = c.prio==='hot'?'<span class="tag tag-hot">\uD83D\uDD34 Heiß</span>':c.prio==='warm'?'<span class="tag tag-warm">\uD83D\uDFE1 Warm</span>':'<span class="tag tag-cold">\uD83D\uDD35 Kalt</span>';
       var warn = (c.prio==='hot'&&!c.offerdate&&c.step<10)?'<div class="card-warn">\u26A0 Kein Angebotstermin!</div>':'';
-      var pdTag = c.pdId?'<span class="tag tag-pd">PD</span>':'';
-      card.innerHTML = '<div class="card-name">'+c.name+'</div>'
+      var daysBadge = '';
+      if(c.lastActivity){
+        var days = Math.floor((Date.now()-new Date(c.lastActivity).getTime())/(1000*60*60*24));
+        var dcls = days>30?'days-badge':days>7?'days-badge warn':'days-badge ok';
+        daysBadge = '<span class="'+dcls+'">'+days+'t</span>';
+      }
+            var pdTag = c.pdId?'<span class="tag tag-pd">PD</span>':'';
+      card.innerHTML = '<div class="card-name" style="display:flex;align-items:center;justify-content:space-between">'+c.name+daysBadge+'</div>'
         +'<div class="card-meta">Step '+(c.step+1)+'/11'+(c.date&&c.date!=='???'?' . 📅'+fmtD(c.date):(c.date==='???'?' . \u26A0 unklar':''))+'</div>'
         +'<div class="progress">'+dots+'</div>'
         +'<div class="tags">'+pt+'<span class="tag" style="background:rgba(245,158,11,.1);color:var(--orange)">'+c.product+'</span>'+pdTag+'</div>'
@@ -320,9 +332,50 @@ function render() {
       if(c.wa) { (function(id){ btns[bi].onclick=function(e){e.stopPropagation();doWA(id);}; })(c.id); bi++; }
       if(c.email) { (function(id){ btns[bi].onclick=function(e){e.stopPropagation();doMail(id);}; })(c.id); bi++; }
       if(c.phone) { (function(id){ btns[bi].onclick=function(e){e.stopPropagation();doCall(id);}; })(c.id); bi++; }
+      card.setAttribute('draggable', 'true');
+      card.dataset.cid = c.id;
       card.addEventListener('click', (function(id){ return function(){ openPanel(id); }; })(c.id));
+      card.addEventListener('dragstart', function(e){
+        e.dataTransfer.setData('text/plain', c.id);
+        this.classList.add('dragging');
+      });
+      card.addEventListener('dragend', function(){
+        this.classList.remove('dragging');
+        document.querySelectorAll('.col-bd').forEach(function(b){ b.classList.remove('drag-over'); });
+      });
       bd.appendChild(card);
     });
+    // Drag & Drop on column
+    (function(colIdx, colBody){
+      colBody.addEventListener('dragover', function(e){
+        e.preventDefault();
+        colBody.classList.add('drag-over');
+      });
+      colBody.addEventListener('dragleave', function(){
+        colBody.classList.remove('drag-over');
+      });
+      colBody.addEventListener('drop', function(e){
+        e.preventDefault();
+        colBody.classList.remove('drag-over');
+        var cid = parseInt(e.dataTransfer.getData('text/plain'));
+        var c = customers.filter(function(x){ return x.id===cid; })[0];
+        if(!c) return;
+        var oldStage = c.stage||0;
+        if(oldStage===colIdx) return;
+        c.stage = colIdx;
+        c.lastActivity = new Date().toISOString();
+        saveLS();
+        render();
+        toast('Verschoben: '+c.name+' -> '+STAGES[colIdx].l);
+        // Auto-update Pipedrive if linked
+        if(c.pdId && STAGES[colIdx] && STAGES[colIdx].pdId){
+          pdReq('deals/'+c.pdId,'PUT',{stage_id:STAGES[colIdx].pdId}).then(function(r){
+            if(r&&r.success) toast('✅ Pipedrive aktualisiert!');
+            else toast('❌ Pipedrive Update fehlgeschlagen');
+          });
+        }
+      });
+    })(ci, bd);
     col.appendChild(hd);
     col.appendChild(bd);
     board.appendChild(col);
@@ -515,7 +568,20 @@ function saveC(id) {
   c.wa = document.getElementById('ef-w').value.trim();
   c.product = document.getElementById('ef-prod').value;
   c.prio = document.getElementById('ef-prio').value;
-  var stageEl = document.getElementById('ef-stage'); if(stageEl) c.stage = parseInt(stageEl.value)||0;
+  var stageEl = document.getElementById('ef-stage');
+  if(stageEl){
+    var newStage = parseInt(stageEl.value)||0;
+    var stageChanged = c.stage !== newStage;
+    c.stage = newStage;
+    c.lastActivity = new Date().toISOString();
+    // Auto-sync to Pipedrive if stage changed
+    if(stageChanged && c.pdId && STAGES[newStage] && STAGES[newStage].pdId){
+      pdReq('deals/'+c.pdId,'PUT',{stage_id:STAGES[newStage].pdId}).then(function(r){
+        if(r&&r.success) toast('✅ Stage in Pipedrive aktualisiert!');
+        else toast('❌ Pipedrive Update fehlgeschlagen');
+      });
+    }
+  }
   c.date = document.getElementById('ef-d').value;
   c.offerdate = document.getElementById('ef-od').value;
   c.strom = document.getElementById('ef-st').value.trim();
@@ -686,7 +752,7 @@ function pdImport() {
         var stage=0;
     for(var si=0;si<STAGES.length;si++){if(STAGES[si].pdId===d.stage_id){stage=si;break;}}
     0;
-    customers.push({id:nextId++,pdId:d.id,name:d.title||'Unbekannt',phone:phone,email:email,wa:phone,product:'PV',prio:d.probability>=70?'hot':d.probability>=40?'warm':'cold',date:d.expected_close_date||'',offerdate:'',strom:'',strompreis:'',kwp:'',preis:d.value?String(parseInt(d.value)):'',pain:d.title||'',notes:'Aus Pipedrive #'+d.id,step:0,stage:stage,completed:[]});
+    customers.push({id:nextId++,pdId:d.id,name:d.title||'Unbekannt',phone:phone,email:email,wa:phone,product:'PV',prio:d.probability>=70?'hot':d.probability>=40?'warm':'cold',date:d.expected_close_date||'',offerdate:'',strom:'',strompreis:'',kwp:'',preis:d.value?String(parseInt(d.value)):'',pain:d.title||'',notes:'Aus Pipedrive #'+d.id,step:0,stage:stage,lastActivity:d.last_activity_date||d.update_time||null,completed:[]});
     n++;
   });
   if(!n){toast('\u26A0 Keine neuen Deals');return;}
@@ -755,7 +821,7 @@ function toast(msg) {
   t.className='toast'; t.textContent=msg;
   w.appendChild(t); setTimeout(function(){t.remove();},4000);
 }
-var VERSION = 'v9';
+var VERSION = 'v10';
 function saveLS() {
   try{
     localStorage.setItem('sc_ver', VERSION);
