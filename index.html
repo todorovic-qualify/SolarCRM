@@ -127,6 +127,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);heig
   <div class="nav-btns">
     <button class="btn btn-ghost" onclick="reqN()">&#128276;</button>
     <button class="btn btn-pd" onclick="showPD()">&#128279; Pipedrive</button>
+    <button class="btn" style="background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3)" onclick="showOF()">&#128196; OpusFlow CSV</button>
     <button class="btn btn-primary" onclick="showAdd()">+ Neuer Kunde</button>
   </div>
 </nav>
@@ -246,11 +247,58 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);heig
   </div>
 </div>
 
+<div class="modal-ov" id="ofM">
+  <div class="modal">
+    <div class="modal-hd">
+      <h2>&#128196; OpusFlow CSV Import</h2>
+      <button class="xbtn" style="background:var(--bg);color:var(--text)" onclick="closeOF()">X</button>
+    </div>
+    <div class="modal-body">
+      <div id="ofs1">
+        <div class="fg full" style="margin-bottom:12px">
+          <label>Firma / Quelle</label>
+          <select id="of-company" style="margin-bottom:10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-family:Outfit,sans-serif;font-size:13px;color:var(--text);outline:none;width:100%">
+            <option value="Hauskonzepte">Hauskonzepte</option>
+            <option value="Energiehaus-Stein">Energiehaus-Stein</option>
+            <option value="DWW">DWW</option>
+            <option value="Andere">Andere</option>
+          </select>
+          <label>CSV Datei auswaehlen (OpusFlow Export)</label>
+          <input id="of-file" type="file" accept=".csv" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-family:Outfit,sans-serif;font-size:13px;color:var(--text);outline:none;width:100%">
+        </div>
+        <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:7px;padding:10px;font-size:12px;color:var(--muted);margin-bottom:14px">
+          OpusFlow: Meine Projekte &#8594; Export &#8594; CSV herunterladen &#8594; hier hochladen.<br>
+          Leads werden als Quelle <strong style="color:#10b981">OpusFlow</strong> markiert und NICHT in Pipedrive importiert.
+        </div>
+        <div class="modal-act" style="border:none;padding:0;margin:0">
+          <button class="btn btn-muted" onclick="closeOF()">Abbrechen</button>
+          <button class="btn btn-primary" onclick="parseOFcsv()">CSV laden</button>
+        </div>
+      </div>
+      <div id="ofs2" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span id="of-found" style="font-size:13px;font-weight:600"></span>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-muted" onclick="ofSel(true)">Alle</button>
+            <button class="btn btn-sm btn-muted" onclick="ofSel(false)">Keine</button>
+          </div>
+        </div>
+        <div id="of-list" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px"></div>
+        <div id="of-ok" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:7px;padding:9px 12px;font-size:13px;color:var(--green);margin-bottom:10px"></div>
+        <div class="modal-act" style="border:none;padding:0;margin:0">
+          <button class="btn btn-muted" onclick="ofBack()">Zurueck</button>
+          <button class="btn btn-primary" onclick="ofImport()">Importieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toasts" id="toasts"></div>
 
 <script>
 var PROXY = 'https://pipedrive-proxy.ghd5cfkf55.workers.dev';
-var VERSION = 'v11';
+var VERSION = 'v12';
 
 var STAGES = [
   {l:'Neuer Lead',d:'Erstkontakt'},
@@ -852,6 +900,170 @@ function loadLS(){
 
 document.getElementById('addM').addEventListener('click',function(e){if(e.target===e.currentTarget)closeAdd();});
 document.getElementById('pdM').addEventListener('click',function(e){if(e.target===e.currentTarget)closePD();});
+document.getElementById('ofM').addEventListener('click',function(e){if(e.target===e.currentTarget)closeOF();});
+
+// ── OPUSFLOW CSV IMPORT ──────────────────────────────────────────
+var ofRows = [];
+
+function showOF(){
+  document.getElementById('ofM').classList.add('open');
+  document.getElementById('ofs1').style.display='block';
+  document.getElementById('ofs2').style.display='none';
+  var comp=localStorage.getItem('of_company');
+  if(comp){var sel=document.getElementById('of-company');for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===comp){sel.selectedIndex=i;break;}}}
+}
+function closeOF(){document.getElementById('ofM').classList.remove('open');}
+function ofBack(){document.getElementById('ofs1').style.display='block';document.getElementById('ofs2').style.display='none';}
+function ofSel(v){ofRows.forEach(function(r,i){var cb=document.getElementById('ofc-'+i);if(cb&&!cb.disabled)cb.checked=v;});}
+
+function parseOFcsv(){
+  var file=document.getElementById('of-file').files[0];
+  if(!file){toast('Bitte CSV Datei auswaehlen!');return;}
+  var comp=document.getElementById('of-company').value;
+  localStorage.setItem('of_company',comp);
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var text=e.target.result;
+    var lines=text.split('\n').filter(function(l){return l.trim();});
+    if(lines.length<2){toast('CSV leer oder ungueltig!');return;}
+    // Parse header
+    var headers=parseCSVLine(lines[0]);
+    ofRows=[];
+    for(var i=1;i<lines.length;i++){
+      var vals=parseCSVLine(lines[i]);
+      if(vals.length<2) continue;
+      var row={};
+      headers.forEach(function(h,j){row[h.trim()]=vals[j]?vals[j].trim():'';});
+      ofRows.push(row);
+    }
+    renderOFList();
+    document.getElementById('ofs1').style.display='none';
+    document.getElementById('ofs2').style.display='block';
+    var ex=customers.map(function(c){return c.ofRef;}).filter(Boolean);
+    var neu=ofRows.filter(function(r){return ex.indexOf(r['Referenz (N)'])===-1;}).length;
+    document.getElementById('of-found').textContent=ofRows.length+' Projekte - '+neu+' neu';
+    toast(ofRows.length+' Projekte geladen!');
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+function parseCSVLine(line){
+  var result=[];var cur='';var inQ=false;
+  for(var i=0;i<line.length;i++){
+    var ch=line[i];
+    if(ch==='"'){inQ=!inQ;}
+    else if(ch===','&&!inQ){result.push(cur);cur='';}
+    else{cur+=ch;}
+  }
+  result.push(cur);
+  return result;
+}
+
+function mapOFProduct(typ){
+  if(!typ) return 'PV';
+  var t=typ.toLowerCase();
+  if(t.indexOf('waermepumpe')!==-1||t.indexOf('wärmepumpe')!==-1) return 'WP';
+  if(t.indexOf('pv')!==-1&&t.indexOf('wp')!==-1) return 'PV+WP';
+  if(t.indexOf('pv')!==-1&&t.indexOf('speicher')!==-1) return 'PV+Speicher';
+  if(t.indexOf('pv')!==-1) return 'PV';
+  return typ;
+}
+
+function mapOFStage(status){
+  if(!status) return 0;
+  var s=status.toLowerCase();
+  if(s.indexOf('neuer lead')!==-1) return 0;
+  if(s.indexOf('kontakt')!==-1) return 1;
+  if(s.indexOf('verzoeg')!==-1||s.indexOf('verzög')!==-1) return 2;
+  if(s.indexOf('aufmass')!==-1||s.indexOf('aufmaß')!==-1) return 3;
+  if(s.indexOf('bearbeitung')!==-1) return 4;
+  if(s.indexOf('fertig')!==-1) return 5;
+  if(s.indexOf('abschluss')!==-1&&s.indexOf('1')!==-1) return 6;
+  if(s.indexOf('abschluss')!==-1) return 7;
+  return 0;
+}
+
+function renderOFList(){
+  var list=document.getElementById('of-list');
+  list.innerHTML='';
+  var ex=customers.map(function(c){return c.ofRef;}).filter(Boolean);
+  ofRows.forEach(function(r,i){
+    var ref=r['Referenz (N)']||'';
+    var already=ex.indexOf(ref)!==-1;
+    var name=r['Kontaktname']||r['Projektname']||'Unbekannt';
+    var email=r['Kontakt E-Mail']||'';
+    var typ=r['Typ']||'';
+    var preis=r['Gesamtangebot exkl.']||'';
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:7px;border:1px solid var(--border);background:'+(already?'rgba(16,185,129,.05)':'var(--bg)')+';margin-bottom:4px';
+    row.innerHTML='<input type="checkbox" id="ofc-'+i+'" '+(already?'disabled checked':'checked')+' style="width:15px;height:15px;accent-color:var(--accent);flex-shrink:0">'
+      +'<div style="flex:1"><div style="font-size:13px;font-weight:600">'+name+'</div>'
+      +'<div style="font-size:11px;color:var(--muted)">'+(email&&email!=='-'?email+' - ':'')+typ+(preis&&preis!=='-'?' - '+preis+' EUR':'')+(already?' (bereits importiert)':'')+'</div></div>'
+      +'<span style="font-size:10px;padding:2px 6px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981">'+r['Status']+'</span>';
+    list.appendChild(row);
+  });
+}
+
+function ofImport(){
+  var ex=customers.map(function(c){return c.ofRef;}).filter(Boolean);
+  var comp=localStorage.getItem('of_company')||'Unbekannt';
+  var n=0;
+  ofRows.forEach(function(r,i){
+    var cb=document.getElementById('ofc-'+i);
+    if(!cb||!cb.checked||cb.disabled) return;
+    var ref=r['Referenz (N)']||'';
+    if(ref&&ex.indexOf(ref)!==-1) return;
+    var name=r['Kontaktname']||r['Projektname']||'Unbekannt';
+    var email=r['Kontakt E-Mail']||'';
+    if(email==='-') email='';
+    var phone=r['Telefonnummer']||'';
+    if(phone==='-') phone='';
+    var mobile=r['Handynummer']||'';
+    if(mobile==='-') mobile='';
+    var preis=r['Gesamtangebot exkl.']||'';
+    preis=preis.replace(/[^0-9.,]/g,'').replace(',','.');
+    var adresse=r['Adresse']||'';
+    var datum=r['Erstellt am']||'';
+    // Convert date format 22-03-2026 to 2026-03-22
+    var dateFormatted='';
+    if(datum){
+      var dp=datum.split(' ')[0].split('-');
+      if(dp.length===3) dateFormatted=dp[2]+'-'+dp[1]+'-'+dp[0];
+    }
+    var lastAct=r['Aktualisiert am']||datum||null;
+    var src={platform:'OpusFlow',company:comp,pipeline:'Meine Projekte',dealId:ref,importedAt:new Date().toLocaleDateString('de-DE')};
+    customers.push({
+      id:nextId++,
+      ofRef:ref,
+      pdId:null,
+      name:name,
+      phone:phone||mobile,
+      email:email,
+      wa:mobile||phone,
+      product:mapOFProduct(r['Typ']),
+      prio:'warm',
+      date:dateFormatted,
+      offerdate:'',
+      strom:'',
+      strompreis:'',
+      kwp:'',
+      preis:preis,
+      pain:r['Projektname']||'',
+      notes:'Adresse: '+adresse+(r['Kundenbetreuer']?' - Betreuer: '+r['Kundenbetreuer']:''),
+      step:0,
+      stage:mapOFStage(r['Status']),
+      lastActivity:lastAct,
+      source:src,
+      completed:[]
+    });
+    n++;
+  });
+  if(!n){toast('Keine neuen Projekte!');return;}
+  var ok=document.getElementById('of-ok');
+  ok.style.display='block';ok.textContent=n+' Projekte importiert!';
+  saveLS();render();toast(n+' OpusFlow Projekte von '+comp+' importiert!');
+  setTimeout(closeOF,1500);
+}
 
 loadLS();
 render();
