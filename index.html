@@ -290,10 +290,10 @@ function render() {
   STAGES.forEach(function(tp, ci) {
     var col = document.createElement('div');
     col.className = 'col';
-    var colC = customers.filter(function(c){ return (c.stage===ci||(!c.stage&&c.stage!==0&&ci===0)) && c.name.toLowerCase().indexOf(q)!==-1; });
+    var colC = customers.filter(function(c){ return (c.stage===ci) && c.name.toLowerCase().indexOf(q)!==-1; });
     var hd = document.createElement('div');
     hd.className = 'col-hd';
-    hd.innerHTML = '<div class="col-ti"><span>'+tp.i+' '+tp.l+'</span><span class="col-cnt">'+colC.length+'</span></div><div class="col-de">'+tp.d+'</div>';
+    hd.innerHTML = '<div class="col-ti"><span>'+tp.l+'</span><span class="col-cnt">'+colC.length+'</span></div><div class="col-de">'+tp.d+'</div>';
     var bd = document.createElement('div');
     bd.className = 'col-bd';
     colC.forEach(function(c) {
@@ -604,14 +604,30 @@ function loadDeals() {
   toast('\u23F3 Lade Stages...');
 
   // Load real pipeline stages first
-  fetch(PROXY+'?path='+encodeURIComponent('stages'),{headers:{'X-PD-Token':token}})
+  // First get pipelines to find the right one
+  fetch(PROXY+'?path='+encodeURIComponent('pipelines'),{headers:{'X-PD-Token':token}})
   .then(function(r){return r.json();})
-  .then(function(sd){
-    if(sd.success && sd.data && sd.data.length>0){
-      STAGES = sd.data.map(function(s){ return {l:s.name, d:'Stage', pdId:s.id}; });
-      localStorage.setItem('pd_stages', JSON.stringify(STAGES));
-      render();
-      toast('\u2705 '+STAGES.length+' Stages geladen!');
+  .then(function(pd){
+    if(pd.success && pd.data){
+      // Use first pipeline or find PV & WP pipeline
+      var pipeline = pd.data[0];
+      for(var pi=0;pi<pd.data.length;pi++){
+        if(pd.data[pi].name && pd.data[pi].name.toLowerCase().indexOf('pv')!==-1){
+          pipeline = pd.data[pi]; break;
+        }
+      }
+      if(pipeline){
+        return fetch(PROXY+'?path='+encodeURIComponent('stages?pipeline_id='+pipeline.id),{headers:{'X-PD-Token':token}})
+        .then(function(r){return r.json();})
+        .then(function(sd){
+          if(sd.success && sd.data && sd.data.length>0){
+            STAGES = sd.data.map(function(s){ return {l:s.name, d:pipeline.name, pdId:s.id}; });
+            localStorage.setItem('pd_stages', JSON.stringify(STAGES));
+            render();
+            toast('\u2705 '+STAGES.length+' Stages aus "'+pipeline.name+'" geladen!');
+          }
+        });
+      }
     }
   }).catch(function(){});
 
@@ -670,7 +686,7 @@ function pdImport() {
         var stage=0;
     for(var si=0;si<STAGES.length;si++){if(STAGES[si].pdId===d.stage_id){stage=si;break;}}
     0;
-    customers.push({id:nextId++,pdId:d.id,name:d.title||'Unbekannt',phone:phone,email:email,wa:phone,product:'PV',prio:d.probability>=70?'hot':d.probability>=40?'warm':'cold',date:d.expected_close_date||'',offerdate:'',strom:'',strompreis:'',kwp:'',preis:d.value?String(parseInt(d.value)):'',pain:d.title||'',notes:'📥 Aus Pipedrive #'+d.id,step:step,completed:(function(){var a=[];for(var i=0;i<step;i++)a.push(i);return a;})()});
+    customers.push({id:nextId++,pdId:d.id,name:d.title||'Unbekannt',phone:phone,email:email,wa:phone,product:'PV',prio:d.probability>=70?'hot':d.probability>=40?'warm':'cold',date:d.expected_close_date||'',offerdate:'',strom:'',strompreis:'',kwp:'',preis:d.value?String(parseInt(d.value)):'',pain:d.title||'',notes:'Aus Pipedrive #'+d.id,step:0,stage:stage,completed:[]});
     n++;
   });
   if(!n){toast('\u26A0 Keine neuen Deals');return;}
@@ -739,7 +755,7 @@ function toast(msg) {
   t.className='toast'; t.textContent=msg;
   w.appendChild(t); setTimeout(function(){t.remove();},4000);
 }
-var VERSION = 'v8';
+var VERSION = 'v9';
 function saveLS() {
   try{
     localStorage.setItem('sc_ver', VERSION);
