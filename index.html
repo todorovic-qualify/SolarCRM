@@ -237,26 +237,37 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);heig
 <script>
 var PROXY = 'https://pipedrive-proxy.ghd5cfkf55.workers.dev';
 
+var STAGES = [
+  {l:'Neuer Lead',      d:'Erstkontakt herstellen'},
+  {l:'Kontakt offen',   d:'Termin vereinbaren'},
+  {l:'Verzoegerung',    d:'Kunde noch nicht bereit'},
+  {l:'Aufmass Termin',  d:'Vor Ort Aufmass'},
+  {l:'Angebot in Bearbeitung', d:'Aurora Angebot erstellen'},
+  {l:'Angebot fertig',  d:'Angebot versendet'},
+  {l:'Abschlussgespraech 1', d:'Erste Angebotsbesprechung'},
+  {l:'Abschlussgespraech 2', d:'Abschluss -> Auftrag!'}
+];
+
 var TPS = [
-  {i:'\u260E',l:'Telefonat',d:'Termin vereinbaren'},
-  {i:'\u2709',l:'Terminbestätigung',d:'Mail mit Details'},
-  {i:'\uD83D\uDCF1',l:'Tag-vor-SMS',d:'Erinnerung + Abrechnungen'},
-  {i:'\u260E',l:'Anruf unterwegs',d:'Wo kann ich parken?'},
-  {i:'\uD83C\uDFE0',l:'Aufmaß',d:'Vor Ort Termin'},
-  {i:'\uD83D\uDCCB',l:'Zusammenfassung',d:'Strom, Gas, Painpoint'},
-  {i:'\uD83D\uDCF1',l:'Info WhatsApp',d:'PDF / Video senden'},
-  {i:'\u2709',l:'Angebot',d:'Aurora Angebot per Mail'},
-  {i:'\u260E',l:'Nachfass-Anruf',d:'Angebot erhalten?'},
-  {i:'\u260E',l:'FOMO-Anruf',d:'Komme 5 Min später – letzter Kunde kaufte auch!'},
-  {i:'\uD83E\uDD1D',l:'Abschluss',d:'Angebotsbesprechung -> Kauf!'}
+  {i:'1',l:'Telefonat',d:'Termin vereinbaren'},
+  {i:'2',l:'Terminbestaetigung',d:'Mail mit Details'},
+  {i:'3',l:'Tag-vor-SMS',d:'Erinnerung + Abrechnungen'},
+  {i:'4',l:'Anruf unterwegs',d:'Wo kann ich parken?'},
+  {i:'5',l:'Aufmass',d:'Vor Ort Termin'},
+  {i:'6',l:'Zusammenfassung',d:'Strom, Gas, Painpoint'},
+  {i:'7',l:'Info WhatsApp',d:'PDF / Video senden'},
+  {i:'8',l:'Angebot',d:'Aurora Angebot per Mail'},
+  {i:'9',l:'Nachfass-Anruf',d:'Angebot erhalten?'},
+  {i:'10',l:'FOMO-Anruf',d:'Komme 5 Min spaeter'},
+  {i:'11',l:'Abschluss',d:'Angebotsbesprechung -> Kauf!'}
 ];
 
 var customers = [
-  {id:1,name:'Schäffler',phone:'+49 151 11111111',email:'s@mail.de',wa:'+4915111111111',product:'PV+Speicher',prio:'hot',date:'2026-04-11',offerdate:'2026-04-18',strom:'5200',strompreis:'0.34',kwp:'14',preis:'26000',pain:'Hohe Stromrechnung',notes:'Speicher gewünscht',step:8,completed:[0,1,2,3,4,5,6,7],pdId:null},
-  {id:2,name:'Budel',phone:'+49 151 22222222',email:'b@mail.de',wa:'+4915122222222',product:'PV',prio:'warm',date:'2026-03-20',offerdate:'2026-03-27',strom:'4100',strompreis:'0.32',kwp:'10',preis:'18500',pain:'Stromkosten senken',notes:'',step:10,completed:[0,1,2,3,4,5,6,7,8,9],pdId:null},
-  {id:3,name:'Kempen',phone:'+49 151 33333333',email:'k@mail.de',wa:'+4915133333333',product:'PV+WP',prio:'hot',date:'2026-03-24',offerdate:'2026-04-02',strom:'6800',strompreis:'0.33',kwp:'18',preis:'38000',pain:'Gas raus komplett',notes:'PV+WP Kombi',step:5,completed:[0,1,2,3,4],pdId:null},
-  {id:4,name:'Hauck',phone:'+49 151 44444444',email:'h@mail.de',wa:'+4915144444444',product:'PV',prio:'warm',date:'',offerdate:'',strom:'4200',strompreis:'0.32',kwp:'11',preis:'20000',pain:'NB anmelden',notes:'Finanzierung klären',step:0,completed:[],pdId:null},
-  {id:5,name:'Richter',phone:'+49 151 55555555',email:'r@mail.de',wa:'+4915155555555',product:'PV',prio:'hot',date:'',offerdate:'2026-03-28',strom:'5000',strompreis:'0.33',kwp:'13',preis:'24000',pain:'Rentner fixe Kosten',notes:'Termin unklar!',step:9,completed:[0,1,2,3,4,5,6,7,8],pdId:null}
+  {id:1,name:'Schäffler',phone:'+49 151 11111111',email:'s@mail.de',wa:'+4915111111111',product:'PV+Speicher',prio:'hot',date:'2026-04-11',offerdate:'2026-04-18',strom:'5200',strompreis:'0.34',kwp:'14',preis:'26000',pain:'Hohe Stromrechnung',notes:'Speicher gewünscht',step:8,stage:7,completed:[0,1,2,3,4,5,6,7],pdId:null},
+  {id:2,name:'Budel',phone:'+49 151 22222222',email:'b@mail.de',wa:'+4915122222222',product:'PV',prio:'warm',date:'2026-03-20',offerdate:'2026-03-27',strom:'4100',strompreis:'0.32',kwp:'10',preis:'18500',pain:'Stromkosten senken',notes:'',step:10,stage:7,completed:[0,1,2,3,4,5,6,7,8,9],pdId:null},
+  {id:3,name:'Kempen',phone:'+49 151 33333333',email:'k@mail.de',wa:'+4915133333333',product:'PV+WP',prio:'hot',date:'2026-03-24',offerdate:'2026-04-02',strom:'6800',strompreis:'0.33',kwp:'18',preis:'38000',pain:'Gas raus komplett',notes:'PV+WP Kombi',step:5,stage:5,completed:[0,1,2,3,4],pdId:null},
+  {id:4,name:'Hauck',phone:'+49 151 44444444',email:'h@mail.de',wa:'+4915144444444',product:'PV',prio:'warm',date:'',offerdate:'',strom:'4200',strompreis:'0.32',kwp:'11',preis:'20000',pain:'NB anmelden',notes:'Finanzierung klären',step:0,stage:0,completed:[],pdId:null},
+  {id:5,name:'Richter',phone:'+49 151 55555555',email:'r@mail.de',wa:'+4915155555555',product:'PV',prio:'hot',date:'',offerdate:'2026-03-28',strom:'5000',strompreis:'0.33',kwp:'13',preis:'24000',pain:'Rentner fixe Kosten',notes:'Termin unklar!',step:9,stage:7,completed:[0,1,2,3,4,5,6,7,8],pdId:null}
 ];
 var nextId = 6;
 var activeId = null;
@@ -276,10 +287,10 @@ function render() {
   document.getElementById('sw').textContent = won;
   document.getElementById('sv').textContent = Math.round(vol/1000)+'KEUR';
 
-  TPS.forEach(function(tp, ci) {
+  STAGES.forEach(function(tp, ci) {
     var col = document.createElement('div');
     col.className = 'col';
-    var colC = customers.filter(function(c){ return c.step===ci && c.name.toLowerCase().indexOf(q)!==-1; });
+    var colC = customers.filter(function(c){ return (c.stage===ci||(!c.stage&&c.stage!==0&&ci===0)) && c.name.toLowerCase().indexOf(q)!==-1; });
     var hd = document.createElement('div');
     hd.className = 'col-hd';
     hd.innerHTML = '<div class="col-ti"><span>'+tp.i+' '+tp.l+'</span><span class="col-cnt">'+colC.length+'</span></div><div class="col-de">'+tp.d+'</div>';
@@ -323,7 +334,7 @@ function openPanel(id) {
   if(!c) return;
   activeId = id;
   document.getElementById('pti').textContent = c.name;
-  document.getElementById('psu').textContent = c.product+' . Step '+(c.step+1)+'/11';
+  document.getElementById('psu').textContent = c.product+' | '+(STAGES[c.stage||0]?STAGES[c.stage||0].l:'Neuer Lead');
   var body = document.getElementById('pbody');
   body.innerHTML = '';
 
@@ -341,6 +352,9 @@ function openPanel(id) {
       +'<option value="PV+Speicher"'+(c.product==='PV+Speicher'?' selected':'')+'>\u2600\uD83D\uDD0B PV+Speicher</option>'
       +'<option value="WP"'+(c.product==='WP'?' selected':'')+'>\uD83C\uDF21 WP</option>'
       +'<option value="PV+WP"'+(c.product==='PV+WP'?' selected':'')+'>\u2600\uD83C\uDF21 PV+WP</option>'
+    +'</select></div>'
+    +'<div class="fg full"><label>Pipedrive Stage</label><select id="ef-stage">'
+    +(function(){var o='';['Neuer Lead','Kontakt offen','Verzoegerung','Aufmass Termin','Angebot in Bearbeitung','Angebot fertig','Abschlussgespraech 1','Abschlussgespraech 2'].forEach(function(s,i){o+='<option value="'+i+'"'+(c.stage===i?' selected':'')+'>'+s+'</option>';});return o;})()
     +'</select></div>'
     +'<div class="fg"><label>Priorität</label><select id="ef-prio">'
       +'<option value="hot"'+(c.prio==='hot'?' selected':'')+'>\uD83D\uDD34 Heiß</option>'
@@ -501,6 +515,7 @@ function saveC(id) {
   c.wa = document.getElementById('ef-w').value.trim();
   c.product = document.getElementById('ef-prod').value;
   c.prio = document.getElementById('ef-prio').value;
+  var stageEl = document.getElementById('ef-stage'); if(stageEl) c.stage = parseInt(stageEl.value)||0;
   c.date = document.getElementById('ef-d').value;
   c.offerdate = document.getElementById('ef-od').value;
   c.strom = document.getElementById('ef-st').value.trim();
@@ -586,7 +601,21 @@ function loadDeals() {
   var inp=document.getElementById('pdt').value.trim();
   var token=inp||localStorage.getItem('pd_t');
   if(!token){ toast('\u26A0 Token eingeben!'); return; }
-  toast('\u23F3 Lade...');
+  toast('\u23F3 Lade Stages...');
+
+  // Load real pipeline stages first
+  fetch(PROXY+'?path='+encodeURIComponent('stages'),{headers:{'X-PD-Token':token}})
+  .then(function(r){return r.json();})
+  .then(function(sd){
+    if(sd.success && sd.data && sd.data.length>0){
+      STAGES = sd.data.map(function(s){ return {l:s.name, d:'Stage', pdId:s.id}; });
+      localStorage.setItem('pd_stages', JSON.stringify(STAGES));
+      render();
+      toast('\u2705 '+STAGES.length+' Stages geladen!');
+    }
+  }).catch(function(){});
+
+  toast('\u23F3 Lade Deals...');
   fetch(PROXY+'?path='+encodeURIComponent('deals?status=open&limit=100'),{headers:{'X-PD-Token':token}})
   .then(function(r){return r.json();})
   .then(function(d){
@@ -638,8 +667,9 @@ function pdImport() {
     if(!cb||!cb.checked||cb.disabled||ex.indexOf(d.id)!==-1) return;
     var phone=d._person&&d._person.phone&&d._person.phone[0]?d._person.phone[0].value:'';
     var email=d._person&&d._person.email&&d._person.email[0]?d._person.email[0].value:'';
-    var sm={1:0,2:1,3:2,4:4,5:7,6:10};
-    var step=sm[d.stage_id]||0;
+        var stage=0;
+    for(var si=0;si<STAGES.length;si++){if(STAGES[si].pdId===d.stage_id){stage=si;break;}}
+    0;
     customers.push({id:nextId++,pdId:d.id,name:d.title||'Unbekannt',phone:phone,email:email,wa:phone,product:'PV',prio:d.probability>=70?'hot':d.probability>=40?'warm':'cold',date:d.expected_close_date||'',offerdate:'',strom:'',strompreis:'',kwp:'',preis:d.value?String(parseInt(d.value)):'',pain:d.title||'',notes:'📥 Aus Pipedrive #'+d.id,step:step,completed:(function(){var a=[];for(var i=0;i<step;i++)a.push(i);return a;})()});
     n++;
   });
@@ -709,7 +739,7 @@ function toast(msg) {
   t.className='toast'; t.textContent=msg;
   w.appendChild(t); setTimeout(function(){t.remove();},4000);
 }
-var VERSION = 'v5';
+var VERSION = 'v8';
 function saveLS() {
   try{
     localStorage.setItem('sc_ver', VERSION);
@@ -727,8 +757,10 @@ function loadLS() {
     }
     var c = localStorage.getItem('sc_c');
     var n = localStorage.getItem('sc_id');
+    var st = localStorage.getItem('pd_stages');
     if(c){ var p=JSON.parse(c); if(p&&p.length>0) customers=p; }
     if(n) nextId=parseInt(n);
+    if(st){ var ps=JSON.parse(st); if(ps&&ps.length>0) STAGES=ps; }
   }catch(e){ localStorage.clear(); }
 }
 
